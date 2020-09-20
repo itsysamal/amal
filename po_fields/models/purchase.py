@@ -12,7 +12,7 @@ class origin(models.Model):
     _rec_name = 'name'
     _description = ''
 
-    name= fields.Char(string="origin", required=False, )
+    name= fields.Char(string="origin", required=True, )
 
 
 
