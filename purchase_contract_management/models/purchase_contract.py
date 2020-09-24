@@ -179,8 +179,9 @@ class PurchaseContract(models.Model):
     @api.onchange('product_template_id')
     def _onchange_product_id(self):
         for contract in self:
-            if contract.product_template_id.contract != True:
-                raise ValidationError(_('You should select products with contract checkbox only.'))
+            if contract.product_template_id != False:
+                if contract.product_template_id.contract != True:
+                    raise ValidationError(_('You should select products with contract checkbox only.'))
 
     @api.constrains('quantity','close_reconcile_qty','unit_price')
     def quantity_not_minus(self):
