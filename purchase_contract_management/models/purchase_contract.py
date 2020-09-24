@@ -23,7 +23,7 @@ class PurchaseContract(models.Model):
                              'Status', required=True, default='new',
                              copy=False, )
     import_permit = fields.Char("Import Permit")
-    vendor_id = fields.Many2one('res.partner', string="Vendor", required=True)
+    vendor_id = fields.Many2one('res.partner', string="Vendor", required=True, domain="[('supplier_rank', '>', 0)]")
     contract_date = fields.Date("Contract Date", required=True)
     shipping_date = fields.Date("Shipping Date")
     payment_term = fields.Char("Payment Terms")
@@ -35,12 +35,12 @@ class PurchaseContract(models.Model):
                                           domain="[('contract','=',True)]", required=True)
     product_brand_origin = fields.Many2one('product.brand', string="Origin")
 
-    quantity = fields.Float(string="Quantity", required=True, default=1.0)
-    ship_qty = fields.Float(string="Ship QTY", compute="_compute_ship_qty", store=True)
-    close_reconcile_qty = fields.Float(string="Close Reconcile QTY")
-    ship_remaining_qty = fields.Float(string="Ship QTY", compute="_compute_ship_remaining_qty", store=True)
-    po_qty = fields.Float(string="PO QTY", compute="_compute_po_qty", store=True)
-    po_remaining_qty = fields.Float(string="PO Remaining QTY", compute="_compute_po_remaining_qty", store=True)
+    quantity = fields.Integer(string="Quantity", required=True, default=1.0)
+    ship_qty = fields.Integer(string="Ship QTY", compute="_compute_ship_qty", store=True)
+    close_reconcile_qty = fields.Integer(string="Close Reconcile QTY")
+    ship_remaining_qty = fields.Integer(string="Ship QTY", compute="_compute_ship_remaining_qty", store=True)
+    po_qty = fields.Integer(string="PO QTY", compute="_compute_po_qty", store=True)
+    po_remaining_qty = fields.Integer(string="PO Remaining QTY", compute="_compute_po_remaining_qty", store=True)
 
     unit_price = fields.Float(string="Unit Price", required=True, default=1.0)
     currency_id = fields.Many2one('res.currency', string="Currency", required=True)
@@ -166,3 +166,32 @@ class PurchaseContract(models.Model):
                 'target': 'new',
                 'view_id': self.env.ref('purchase_contract_management.view_contract_advance_account_payment_form').id,
                 'context': ctx}
+
+    @api.constrains('contract_date', 'shipping_date')
+    def _check_contract_shipping_date(self):
+        for contract in self:
+            if contract.contract_date < contract.create_date.date():
+                raise ValidationError(_('Contract date should not accept date before creation date.'))
+            if contract.shipping_date:
+               if contract.contract_date > contract.shipping_date:
+                  raise ValidationError(_('Shipping date should not be date before contract date.'))
+
+    @api.onchange('product_template_id')
+    def _onchange_product_id(self):
+        for contract in self:
+            if contract.product_template_id.contract != True:
+                raise ValidationError(_('You should select products with contract checkbox only.'))
+
+    @api.constrains('quantity','close_reconcile_qty','unit_price')
+    def quantity_not_minus(self):
+        for contract in self:
+            if contract.quantity < 0:
+                raise ValidationError('Please enter a positive number in Quantity')
+
+            if contract.close_reconcile_qty < 0:
+                raise ValidationError('Please enter a positive number in Close Reconcile QTY')
+
+            if contract.unit_price < 0:
+                raise ValidationError('Please enter a positive number in Unit Price')
+
+

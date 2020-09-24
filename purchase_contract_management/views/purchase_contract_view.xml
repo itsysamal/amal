@@ -38,7 +38,7 @@
                         <group>
                             <group name="personal_info">
                                 <field name="import_permit" string="Import Permit"/>
-                                <field name="vendor_id" string="Vendor"/>
+                                <field name="vendor_id" string="Vendor" options="{'no_open': True, 'no_create': True, 'no_create_edit': True}"/>
                                 <field name="contract_date" string="Contract Date"/>
                                 <field name="shipping_date" string="Shipping Date"/>
                                 <field name="payment_term" string="Payment Terms"/>
@@ -73,28 +73,29 @@
                         <notebook name="contract_notebook">
                             <page name="ship_details" string="Ship Details"
                                   groups="purchase_contract_management.group_purchase_contract_line_user_1,purchase_contract_management.group_purchase_contract_line_user_manager">
-                                <group name="ship_line">
-                                    <field name="purchase_contract_line_ids" string="Ship Line">
-                                        <tree string="Purchase Contract Lines" editable="bottom" delete="0">
-                                            <field name="name" modifiers="{}" string="Shipping line"/>
+                                <group name="ship_line_group">
+                                    <field name="purchase_contract_line_ids" widget="section_and_note_one2many">
+                                        <tree string="Ship Details" editable="top">
+                                            <field name="name" modifiers="{}" string="Shipping line" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
                                             <field name="product_template_id"/>
                                             <field name="contract_id" invisible="1"/>
-                                            <field name="picking_type_id"/>
+                                            <field name="picking_type_id" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
                                             <field name="purchase_created" invisible="1"/>
-                                            <field name="invoice_no" string="Invoice No."/>
-                                            <field name="invoice_date" string="Invoice Date"/>
-                                            <field name="customs_no" string="Customs No." optional="hide"/>
-                                            <field name="customs_date" string="Customs Date"
-                                                   optional="hide"/>
+                                            <field name="invoice_no" string="Invoice No." attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                            <field name="invoice_date" string="Invoice Date" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
                                             <field name="quantity" string="Quantity"
-                                                   sum="Sum of Quantity"/>
-                                            <field name="arrival_date" string="Arrival date" optional="hide"/>
-                                            <field name="bl_no" string="BL No." optional="hide"/>
-                                            <field name="bl_date" string="BL DATE/ETS" optional="hide"/>
+                                                   sum="Sum of Quantity" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                            <field name="customs_no" string="Customs No." optional="hide" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                            <field name="customs_date" string="Customs Date"
+                                                   optional="hide" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                            <field name="arrival_date" string="Arrival date" optional="hide" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                            <field name="bl_no" string="BL No." optional="hide" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                            <field name="bl_date" string="BL DATE/ETS" optional="hide" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
                                             <field name="vessel_date" string="Vessel Date"
-                                                   optional="hide"/>
-                                            <field name="pol" string="POL" optional="hide"/>
-                                            <field name="pod" string="POD" optional="hide"/>
+                                                   optional="hide" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                            <field name="pol" string="POL" optional="hide" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                            <field name="pod" string="POD" optional="hide" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                            <field name="purchase_id" readonly="1" attrs="{'invisible': [('purchase_created', '=', False)]}"/>
                                             <button name="create_purchase_order"
                                                     type="object" string="Create PO" class="oe_highlight"
                                                     attrs="{'invisible': [('purchase_created', '=', True)]}"
@@ -109,7 +110,7 @@
                                 <group name="contract_operation_group">
                                     <field name="contract_operation_line_ids">
                                         <tree string="Contract Operation" editable="top">
-                                            <field name="purchase_contract_line_id"/>
+                                            <field name="purchase_contract_line_id" options="{'no_open': True, 'no_create': True, 'no_create_edit': True}"/>
                                             <field name="name" modifiers="{}"/>
                                             <field name="loading_area" string="Loading Area"/>
                                             <field name="inspection_name" string="Inspection Name"/>
@@ -144,7 +145,7 @@
                                 <group name="ship_cost_line">
                                     <field name="ship_cost_line_ids">
                                         <tree string="Ship Cost Line" editable="top">
-                                            <field name="purchase_contract_line_id"/>
+                                            <field name="purchase_contract_line_id" options="{'no_open': True, 'no_create': True, 'no_create_edit': True}"/>
                                             <field name="name" modifiers="{}" string="Description"/>
                                             <field name="freight" string="Freight"/>
                                             <field name="thc" string="THC"/>
@@ -162,7 +163,7 @@
                                     <tree string="Purchase Order" multi_edit="1"
                                           decoration-muted="state=='cancel'"
                                           class="o_purchase_order">
-                                        <field name="contract_id"/>
+                                        <field name="contract_id" options="{'no_open': True, 'no_create': True, 'no_create_edit': True}"/>
                                         <field name="order_id"/>
                                         <field name="date_order"
                                                invisible="not context.get('quotation_only', False)"

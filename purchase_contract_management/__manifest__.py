@@ -23,7 +23,7 @@
         'views/account_payment_view.xml',
         'views/account_move_view.xml',
     ],
-    'depends': ['base', 'purchase','product','account','branch'],
+    'depends': ['base', 'purchase','product','account','branch','product_brand_inventory','xs_purchase_advance_payment'],
     'installable': True,
     'auto_install': False,
     'application': True,

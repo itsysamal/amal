@@ -24,7 +24,7 @@ class PurchaseContractLine(models.Model):
     invoice_date = fields.Date("Invoice Date")
     customs_no = fields.Char("Customs No.")
     customs_date = fields.Date("Customs Date")
-    quantity = fields.Float(string="Quantity", default=1.0)
+    quantity = fields.Integer(string="Quantity", default=1.0)
     arrival_date = fields.Date("Arrival Date")
     bl_no = fields.Char("BL No.")
     bl_date = fields.Date("BL Date/ETS")
@@ -32,6 +32,7 @@ class PurchaseContractLine(models.Model):
     pol = fields.Date("POL")
     pod = fields.Date("POD")
     purchase_created = fields.Boolean()
+    purchase_id = fields.Many2one('purchase.order', string='Purchase Order')
 
     @api.model
     def _default_picking_type(self):
@@ -72,4 +73,19 @@ class PurchaseContractLine(models.Model):
             }]],
         })
         obj_purchase.button_confirm()
+        self.purchase_id = obj_purchase.id
         self.contract_id.write({'purchase_line_ids': [(4, po_line.id) for po_line in obj_purchase.order_line]})
+
+    def unlink(self):
+        for line in self:
+            if line.purchase_id:
+                if line.purchase_created == True:
+                    raise ValidationError(
+                        'You cannot delete this purchase contract line because it related with PO created.')
+        return super(PurchaseContractLine, self).unlink()
+
+    @api.constrains('quantity')
+    def quantity_not_minus(self):
+        for line in self:
+            if line.quantity < 0:
+                raise ValidationError('Please enter a positive number in Quantity')

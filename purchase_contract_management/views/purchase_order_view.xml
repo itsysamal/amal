@@ -13,6 +13,9 @@
                 <button name="action_view_invoice" position="attributes">
                     <attribute name="context">{'create_bill':True,'contract_id':contract_id}</attribute>
                 </button>
+                <field name="order_line" position="attributes">
+                    <attribute name="attrs">{'readonly': ['|',('state', 'in', ('done', 'cancel')),('contract_id', '!=', False)]}</attribute>
+                </field>
             </field>
         </record>
     </data>
