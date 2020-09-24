@@ -176,8 +176,8 @@ class PurchaseContract(models.Model):
                if contract.contract_date > contract.shipping_date:
                   raise ValidationError(_('Shipping date should not be date before contract date.'))
 
-    @api.onchange('product_template_id')
-    def _onchange_product_id(self):
+    @api.constrains('product_template_id')
+    def _constrains_product_id(self):
         for contract in self:
             if contract.product_template_id != False:
                 if contract.product_template_id.contract != True:
