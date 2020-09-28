@@ -34,6 +34,7 @@ class PurchaseContractLine(models.Model):
     purchase_created = fields.Boolean()
     purchase_id = fields.Many2one('purchase.order', string='Purchase Order')
 
+
     @api.model
     def _default_picking_type(self):
         type_obj = self.env["stock.picking.type"]
@@ -72,7 +73,7 @@ class PurchaseContractLine(models.Model):
                 'date_planned': fields.Datetime.now()
             }]],
         })
-        obj_purchase.button_confirm()
+        # obj_purchase.button_confirm()
         self.purchase_id = obj_purchase.id
         self.contract_id.write({'purchase_line_ids': [(4, po_line.id) for po_line in obj_purchase.order_line]})
 

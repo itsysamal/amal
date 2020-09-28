@@ -57,15 +57,15 @@ class PurchaseContract(models.Model):
                                          string='Ship Cost', copy=False)
 
     order_count = fields.Integer(compute='compute_purchase_order_count')
-    purchase_line_ids = fields.One2many('purchase.order.line', 'contract_id', string='PurchaseLine', readonly=True)
-    account_payment_ids = fields.One2many('account.payment', 'contract_id', string="Advanced Payment")
+    purchase_line_ids = fields.One2many('purchase.order.line', 'contract_id', string='PurchaseLine',domain="[('state', 'in', ['draft','sent','purchase','done'])]")
+    account_payment_ids = fields.One2many('account.payment', 'contract_id', string="Advanced Payment",domain="[('state', 'in', ['draft','sent','posted','reconciled'])]")
     amount_residual = fields.Float('Residual amount', readonly=True, compute="_get_amount")
     account_payment_count = fields.Integer(compute='compute_account_payment_count')
     account_move_ids = fields.One2many('account.move', 'contract_id', string="Vendor Bills",
-                                       domain="[('type', '=', 'in_invoice')]")
+                                       domain="[('type', '=', 'in_invoice'),('state', 'in', ['draft','posted'])]")
     account_move_count = fields.Integer(compute='compute_account_move_count')
 
-    @api.depends('purchase_contract_line_ids.quantity')
+    @api.depends('purchase_contract_line_ids.quantity', 'purchase_contract_line_ids')
     def _compute_ship_qty(self):
         for contract in self:
             total_qty = []
@@ -78,12 +78,13 @@ class PurchaseContract(models.Model):
         for contract in self:
             contract.ship_remaining_qty = contract.quantity - contract.ship_qty - contract.close_reconcile_qty
 
-    @api.depends('purchase_line_ids.product_qty')
+    @api.depends('purchase_line_ids.product_qty', 'purchase_line_ids')
     def _compute_po_qty(self):
         for contract in self:
             total_po_qty = []
             for rec in contract.purchase_line_ids:
-                total_po_qty.append(rec.product_qty)
+                if rec.state in ['purchase','done']:
+                   total_po_qty.append(rec.product_qty)
             contract.po_qty = sum(total_po_qty)
 
     @api.depends('po_qty', 'quantity')
@@ -96,12 +97,13 @@ class PurchaseContract(models.Model):
         for contract in self:
             contract.amount = contract.unit_price * contract.quantity
 
-    @api.depends('account_payment_ids.amount')
+    @api.depends('account_payment_ids.amount', 'account_payment_ids')
     def _compute_total_advance_payment(self):
         for contract in self:
             total_payment = []
             for rec in contract.account_payment_ids:
-                total_payment.append(rec.amount)
+                if rec.state not in ['draft','cancel']:
+                   total_payment.append(rec.amount)
             contract.total_advance_payment = sum(total_payment)
 
     @api.depends('amount', 'total_advance_payment')
@@ -173,8 +175,8 @@ class PurchaseContract(models.Model):
             if contract.contract_date < contract.create_date.date():
                 raise ValidationError(_('Contract date should not accept date before creation date.'))
             if contract.shipping_date:
-               if contract.contract_date > contract.shipping_date:
-                  raise ValidationError(_('Shipping date should not be date before contract date.'))
+                if contract.contract_date > contract.shipping_date:
+                    raise ValidationError(_('Shipping date should not be date before contract date.'))
 
     @api.constrains('product_template_id')
     def _constrains_product_id(self):
@@ -183,7 +185,7 @@ class PurchaseContract(models.Model):
                 if contract.product_template_id.contract != True:
                     raise ValidationError(_('You should select products with contract checkbox only.'))
 
-    @api.constrains('quantity','close_reconcile_qty','unit_price')
+    @api.constrains('quantity', 'close_reconcile_qty', 'unit_price')
     def quantity_not_minus(self):
         for contract in self:
             if contract.quantity < 0:
@@ -194,5 +196,3 @@ class PurchaseContract(models.Model):
 
             if contract.unit_price < 0:
                 raise ValidationError('Please enter a positive number in Unit Price')
-
-

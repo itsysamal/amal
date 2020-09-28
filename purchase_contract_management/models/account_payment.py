@@ -6,7 +6,7 @@ from odoo import models, fields, api, exceptions, _
 class AccountPayment(models.Model):
     _inherit = 'account.payment'
 
-    contract_id = fields.Many2one('purchase.contract', string="Purchase Contract", readonly=True)
+    contract_id = fields.Many2one('purchase.contract', string="Purchase Contract", readonly=True,states={'draft': [('readonly', False)]})
     create_in_state_contract = fields.Selection([('draft', 'Draft'),
                                                  ('confirm', 'Confirm')],
                                                 default='confirm',
@@ -26,4 +26,10 @@ class AccountPayment(models.Model):
         res = super(AccountPayment, self).cancel()
         for rec in self:
             rec.contract_id.total_advance_payment -= rec.amount
+        return res
+
+    def post(self):
+        res = super(AccountPayment, self).post()
+        for rec in self:
+            rec.contract_id.total_advance_payment += rec.amount
         return res
