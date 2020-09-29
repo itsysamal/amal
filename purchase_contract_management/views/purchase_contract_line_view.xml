@@ -15,7 +15,7 @@
                     <sheet string="Purchase Contract Lines">
                         <div class="oe_title">
                             <h1>
-                                <field name="name" required="1" string="Shipping line" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="name" required="1" string="Shipping line"/>
                             </h1>
                         </div>
                         <group>
@@ -29,18 +29,26 @@
                                 <field name="contract_date" invisible="1"/>
                                 <field name="product_template_id"/>
                                 <field name="picking_type_id" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
-                                <field name="invoice_no" string="Invoice No." attrs="{'readonly': [('purchase_created', '=', True)]}"/>
-                                <field name="invoice_date" string="Invoice Date" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
-                                <field name="customs_no" string="Customs No." attrs="{'readonly': [('purchase_created', '=', True)]}"/>
-                                <field name="customs_date" string="Customs Date" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="invoice_no" string="Invoice No."
+                                       attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="invoice_date" string="Invoice Date"
+                                       attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="customs_no" string="Customs No."
+                                       attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="customs_date" string="Customs Date"
+                                       attrs="{'readonly': [('purchase_created', '=', True)]}"/>
                                 <field name="quantity" string="Quantity"
                                        sum="Sum of Quantity" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
                             </group>
                             <group>
-                                <field name="arrival_date" string="Arrival date" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
-                                <field name="bl_no" string="BL No." attrs="{'readonly': [('purchase_created', '=', True)]}"/>
-                                <field name="bl_date" string="BL DATE/ETS" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
-                                <field name="vessel_date" string="Vessel Date" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="arrival_date" string="Arrival date"
+                                       attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="bl_no" string="BL No."
+                                       attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="bl_date" string="BL DATE/ETS"
+                                       attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="vessel_date" string="Vessel Date"
+                                       attrs="{'readonly': [('purchase_created', '=', True)]}"/>
                                 <field name="pol" string="POL" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
                                 <field name="pod" string="POD" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
                             </group>

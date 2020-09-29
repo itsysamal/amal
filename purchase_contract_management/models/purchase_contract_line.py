@@ -11,7 +11,7 @@ class PurchaseContractLine(models.Model):
     _rec_name = 'name'
     _order = 'name DESC'
 
-    name = fields.Char(string="Shipping Line", required=True, copy=False)
+    name = fields.Char(string="Shipping Line", required=True, readonly=True, copy=False, default='/')
     contract_id = fields.Many2one('purchase.contract', string="Purchase Contract")
     vendor_id = fields.Many2one('res.partner', related='contract_id.vendor_id', string='Vendor', readonly=True,
                                 store=True)
@@ -34,6 +34,11 @@ class PurchaseContractLine(models.Model):
     purchase_created = fields.Boolean()
     purchase_id = fields.Many2one('purchase.order', string='Purchase Order')
 
+    @api.model
+    def create(self, vals):
+        if not vals.get('name') or vals['name'] == _('/'):
+            vals['name'] = self.env['ir.sequence'].next_by_code('purchase.contract.line') or '/'
+        return super(PurchaseContractLine, self).create(vals)
 
     @api.model
     def _default_picking_type(self):

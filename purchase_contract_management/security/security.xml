@@ -64,5 +64,10 @@
             <field name="implied_ids" eval="[(4, ref('group_ship_cost_lines_user'))]"/>
             <field name="users" eval="[(4, ref('base.user_root'))]"/>
         </record>
+
+        <record id="group_create_advance_payment_contract_confirmed" model="res.groups">
+            <field name="name">Create Advance Payment Confirmed From Purchase Contract</field>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
     </data>
 </odoo>

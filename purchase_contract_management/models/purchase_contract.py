@@ -13,7 +13,8 @@ class PurchaseContract(models.Model):
     _order = 'name DESC'
 
     name = fields.Char(string="Contract", required=True, copy=False,
-                       default=lambda self: self.env['ir.sequence'].next_by_code('purchase.contract') or '/')
+                       default=lambda self: self.env['ir.sequence'].next_by_code('purchase.contract') or '/',
+                       tracking=True)
 
     state = fields.Selection([('new', 'New'),
                               ('in_progress', 'IN Progress'),
@@ -21,7 +22,7 @@ class PurchaseContract(models.Model):
                               ('partially_done', 'Partially Done & Close'),
                               ('done', 'Done'), ],
                              'Status', required=True, default='new',
-                             copy=False, )
+                             copy=False, tracking=True)
     import_permit = fields.Char("Import Permit")
     vendor_id = fields.Many2one('res.partner', string="Vendor", required=True, domain="[('supplier_rank', '>', 0)]")
     contract_date = fields.Date("Contract Date", required=True)
@@ -35,19 +36,21 @@ class PurchaseContract(models.Model):
                                           domain="[('contract','=',True)]", required=True)
     product_brand_origin = fields.Many2one('product.brand', string="Origin")
 
-    quantity = fields.Integer(string="Quantity", required=True, default=1.0)
-    ship_qty = fields.Integer(string="Ship QTY", compute="_compute_ship_qty", store=True)
-    close_reconcile_qty = fields.Integer(string="Close Reconcile QTY")
-    ship_remaining_qty = fields.Integer(string="Ship QTY", compute="_compute_ship_remaining_qty", store=True)
-    po_qty = fields.Integer(string="PO QTY", compute="_compute_po_qty", store=True)
-    po_remaining_qty = fields.Integer(string="PO Remaining QTY", compute="_compute_po_remaining_qty", store=True)
+    quantity = fields.Integer(string="Quantity", required=True, default=1.0, tracking=True)
+    ship_qty = fields.Integer(string="Ship QTY", compute="_compute_ship_qty", store=True, tracking=True)
+    close_reconcile_qty = fields.Integer(string="Close Reconcile QTY", tracking=True)
+    ship_remaining_qty = fields.Integer(string="Ship QTY", compute="_compute_ship_remaining_qty", store=True,
+                                        tracking=True)
+    po_qty = fields.Integer(string="PO QTY", compute="_compute_po_qty", store=True, tracking=True)
+    po_remaining_qty = fields.Integer(string="PO Remaining QTY", compute="_compute_po_remaining_qty", store=True,
+                                      tracking=True)
 
-    unit_price = fields.Float(string="Unit Price", required=True, default=1.0)
-    currency_id = fields.Many2one('res.currency', string="Currency", required=True)
-    amount = fields.Monetary('Amount', compute='_compute_amount', store=True)
+    unit_price = fields.Float(string="Unit Price", required=True, default=1.0, tracking=True)
+    currency_id = fields.Many2one('res.currency', string="Currency", required=True, tracking=True)
+    amount = fields.Monetary('Amount', compute='_compute_amount', store=True, tracking=True)
     total_advance_payment = fields.Monetary('Total Advance Payment', compute='_compute_total_advance_payment',
-                                            store=True)
-    net_amount = fields.Monetary('Net Amount', compute='_compute_net_amount', store=True)
+                                            store=True, tracking=True)
+    net_amount = fields.Monetary('Net Amount', compute='_compute_net_amount', store=True, tracking=True)
 
     purchase_contract_line_ids = fields.One2many('purchase.contract.line', 'contract_id',
                                                  string='Ship Lines', copy=False)
@@ -57,8 +60,11 @@ class PurchaseContract(models.Model):
                                          string='Ship Cost', copy=False)
 
     order_count = fields.Integer(compute='compute_purchase_order_count')
-    purchase_line_ids = fields.One2many('purchase.order.line', 'contract_id', string='PurchaseLine',domain="[('state', 'in', ['draft','sent','purchase','done'])]")
-    account_payment_ids = fields.One2many('account.payment', 'contract_id', string="Advanced Payment",domain="[('state', 'in', ['draft','sent','posted','reconciled'])]")
+    purchase_line_ids = fields.One2many('purchase.order.line', 'contract_id', string='PurchaseLine',
+                                        domain="[('state', 'in', ['draft','sent','purchase','done'])]")
+
+    account_payment_ids = fields.One2many('account.payment', 'contract_id', string="Advanced Payment",
+                                          domain="[('state', 'in', ['draft','sent','posted','reconciled'])]")
     amount_residual = fields.Float('Residual amount', readonly=True, compute="_get_amount")
     account_payment_count = fields.Integer(compute='compute_account_payment_count')
     account_move_ids = fields.One2many('account.move', 'contract_id', string="Vendor Bills",
@@ -83,8 +89,8 @@ class PurchaseContract(models.Model):
         for contract in self:
             total_po_qty = []
             for rec in contract.purchase_line_ids:
-                if rec.state in ['purchase','done']:
-                   total_po_qty.append(rec.product_qty)
+                if rec.state in ['purchase', 'done']:
+                    total_po_qty.append(rec.product_qty)
             contract.po_qty = sum(total_po_qty)
 
     @api.depends('po_qty', 'quantity')
@@ -102,8 +108,8 @@ class PurchaseContract(models.Model):
         for contract in self:
             total_payment = []
             for rec in contract.account_payment_ids:
-                if rec.state not in ['draft','cancel']:
-                   total_payment.append(rec.amount)
+                if rec.state not in ['draft', 'cancel']:
+                    total_payment.append(rec.amount)
             contract.total_advance_payment = sum(total_payment)
 
     @api.depends('amount', 'total_advance_payment')
@@ -159,6 +165,7 @@ class PurchaseContract(models.Model):
                'active_ids': [],
                'active_model': self._name,
                'active_id': self.id,
+               'default_check_contract_payment': True,
                }
 
         return {'name': _("Advance Payment"),
@@ -196,3 +203,12 @@ class PurchaseContract(models.Model):
 
             if contract.unit_price < 0:
                 raise ValidationError('Please enter a positive number in Unit Price')
+
+    def unlink(self):
+        for line in self:
+            if len(line.purchase_contract_line_ids) > 0 or len(line.contract_operation_line_ids) > 0 or len(
+                    line.ship_cost_line_ids) > 0 or len(line.purchase_line_ids) > 0 or len(
+                line.account_payment_ids) > 0 or len(line.account_move_ids) > 0:
+                raise ValidationError(
+                    'You cannot delete this Purchase Contract because it related with transactions created.')
+        return super(PurchaseContract, self).unlink()

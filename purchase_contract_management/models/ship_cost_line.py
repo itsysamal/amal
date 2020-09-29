@@ -15,3 +15,14 @@ class ShipCostLine(models.Model):
     freight = fields.Float("Freight")
     thc = fields.Float("THC")
     currency_id = fields.Many2one('res.currency', string="Currency")
+    purchase_contract_line_ids = fields.Many2many('purchase.contract.line', string='Purchase Contract Line',
+                                                  compute='compute_purchase_contract_line_ids')
+
+    @api.depends('contract_id.purchase_contract_line_ids')
+    def compute_purchase_contract_line_ids(self):
+        for contract in self:
+            ship_line = []
+            for rec in contract.contract_id.purchase_contract_line_ids:
+                if rec._origin.id:
+                    ship_line.append(rec.id)
+            contract.purchase_contract_line_ids = [(6, 0, ship_line)]

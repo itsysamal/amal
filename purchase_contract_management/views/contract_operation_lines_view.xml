@@ -13,7 +13,8 @@
                         </div>
                         <group>
                             <group name="personal_info">
-                                <field name="purchase_contract_line_id" readonly="1"/>
+                                <field name="purchase_contract_line_id" readonly="1" domain="[('id', 'in',purchase_contract_line_ids)]"/>
+                                <field name="purchase_contract_line_ids" invisible="1"/>
                                 <field name="contract_id" invisible="1"/>
                                 <field name="loading_area" string="loading Area"/>
                                 <field name="inspection_name" string="Inspection Name"/>
