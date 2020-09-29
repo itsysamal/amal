@@ -9,7 +9,7 @@
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="contract_id" options="{'no_create': True}"/>
                     <field name="purchase_ids" invisible="1"/>
-                    <field name="purchase_id" options="{'no_create': True}" attrs="{'readonly': [('check_contract_payment', '=', False),('state', '!=', 'draft')]}" domain="[('id', 'in',purchase_ids)]"/>
+                    <field name="purchase_id" options="{'no_create': True}" attrs="{'readonly': ['|',('check_contract_payment', '=', False),('state', '!=', 'draft')]}" domain="[('id', 'in',purchase_ids)]"/>
                     <field name="check_contract_payment" invisible="1"/>
                 </xpath>
                 <!--<field name="payment_type" position="attributes">-->
