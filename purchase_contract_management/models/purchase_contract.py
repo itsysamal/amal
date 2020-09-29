@@ -39,7 +39,7 @@ class PurchaseContract(models.Model):
     quantity = fields.Integer(string="Quantity", required=True, default=1.0, tracking=True)
     ship_qty = fields.Integer(string="Ship QTY", compute="_compute_ship_qty", store=True, tracking=True)
     close_reconcile_qty = fields.Integer(string="Close Reconcile QTY", tracking=True)
-    ship_remaining_qty = fields.Integer(string="Ship QTY", compute="_compute_ship_remaining_qty", store=True,
+    ship_remaining_qty = fields.Integer(string="Ship Remaining QTY", compute="_compute_ship_remaining_qty", store=True,
                                         tracking=True)
     po_qty = fields.Integer(string="PO QTY", compute="_compute_po_qty", store=True, tracking=True)
     po_remaining_qty = fields.Integer(string="PO Remaining QTY", compute="_compute_po_remaining_qty", store=True,
