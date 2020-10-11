@@ -7,34 +7,39 @@
             <field name="inherit_id" ref="account.view_account_payment_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='partner_id']" position="after">
-                    <field name="contract_id" options="{'no_create': True}"/>
+                    <field name="contract_id" options="{'no_create': True}" domain="[('vendor_id','=', partner_id)]"/>
                     <field name="purchase_ids" invisible="1"/>
-                    <field name="purchase_id" options="{'no_create': True}" attrs="{'readonly': ['|',('check_contract_payment', '=', False),('state', '!=', 'draft')]}" domain="[('id', 'in',purchase_ids)]"/>
+                    <field name="purchase_id" options="{'no_create': True}"
+                           attrs="{'readonly': [('state', '!=', 'draft')]}"
+                           domain="[('id', 'in',purchase_ids)]"/>
+                    <!--<field name="purchase_id" options="{'no_create': True}"-->
+                    <!--attrs="{'readonly': ['|',('check_contract_payment', '=', False),('state', '!=', 'draft')]}"-->
+                    <!--domain="[('id', 'in',purchase_ids)]"/>-->
                     <field name="check_contract_payment" invisible="1"/>
                 </xpath>
                 <!--<field name="payment_type" position="attributes">-->
-                    <!--<attribute name="attrs">{'readonly': ['|',('contract_id', '!=', False),('state', '!=', 'draft')]}</attribute>-->
+                <!--<attribute name="attrs">{'readonly': ['|',('contract_id', '!=', False),('state', '!=', 'draft')]}</attribute>-->
                 <!--</field>-->
                 <!--<field name="partner_type" position="attributes">-->
-                    <!--<attribute name="attrs">{'readonly': ['|',('contract_id', '!=', False),('state', '!=', 'draft')],'required': [('state', '=', 'draft'), ('payment_type', 'in', ('inbound', 'outbound'))], 'invisible': [('payment_type', 'not in', ('inbound', 'outbound'))]}</attribute>-->
+                <!--<attribute name="attrs">{'readonly': ['|',('contract_id', '!=', False),('state', '!=', 'draft')],'required': [('state', '=', 'draft'), ('payment_type', 'in', ('inbound', 'outbound'))], 'invisible': [('payment_type', 'not in', ('inbound', 'outbound'))]}</attribute>-->
                 <!--</field>-->
                 <!--<field name="partner_id" position="attributes">-->
-                    <!--<attribute name="attrs">{'readonly': ['|',('contract_id', '!=', False),('state', '!=', 'draft')],'required': [('state', '=', 'draft'), ('payment_type', 'in', ('inbound', 'outbound'))], 'invisible': [('payment_type', 'not in', ('inbound', 'outbound'))]}</attribute>-->
+                <!--<attribute name="attrs">{'readonly': ['|',('contract_id', '!=', False),('state', '!=', 'draft')],'required': [('state', '=', 'draft'), ('payment_type', 'in', ('inbound', 'outbound'))], 'invisible': [('payment_type', 'not in', ('inbound', 'outbound'))]}</attribute>-->
                 <!--</field>-->
                 <!--<field name="payment_method_id" position="attributes">-->
-                    <!--<attribute name="attrs">{'readonly': ['|',('contract_id', '!=', False),('state', '!=', 'draft')],'invisible': [('hide_payment_method', '=', True)]}</attribute>-->
+                <!--<attribute name="attrs">{'readonly': ['|',('contract_id', '!=', False),('state', '!=', 'draft')],'invisible': [('hide_payment_method', '=', True)]}</attribute>-->
                 <!--</field>-->
                 <!--<field name="amount" position="attributes">-->
-                    <!--<attribute name="attrs">{'readonly': ['|',('contract_id', '!=', False),('state', '!=', 'draft')]}</attribute>-->
+                <!--<attribute name="attrs">{'readonly': ['|',('contract_id', '!=', False),('state', '!=', 'draft')]}</attribute>-->
                 <!--</field>-->
                 <!--<field name="currency_id" position="attributes">-->
-                    <!--<attribute name="attrs">{'readonly': ['|',('contract_id', '!=', False),('state', '!=', 'draft')]}</attribute>-->
+                <!--<attribute name="attrs">{'readonly': ['|',('contract_id', '!=', False),('state', '!=', 'draft')]}</attribute>-->
                 <!--</field>-->
                 <!--<field name="payment_date" position="attributes">-->
-                    <!--<attribute name="attrs">{'readonly': ['|',('contract_id', '!=', False),('state', '!=', 'draft')]}</attribute>-->
+                <!--<attribute name="attrs">{'readonly': ['|',('contract_id', '!=', False),('state', '!=', 'draft')]}</attribute>-->
                 <!--</field>-->
                 <!--<field name="communication" position="attributes">-->
-                    <!--<attribute name="attrs">{'readonly': ['|',('contract_id', '!=', False),('state', '!=', 'draft')]}</attribute>-->
+                <!--<attribute name="attrs">{'readonly': ['|',('contract_id', '!=', False),('state', '!=', 'draft')]}</attribute>-->
                 <!--</field>-->
             </field>
         </record>
@@ -86,6 +91,7 @@
         <record id="view_inherit_view_purchase_advance_account_payment_form_contract" model="ir.ui.view">
             <field name="name">contract.account.payment.form</field>
             <field name="model">account.payment</field>
+            <field name="priority">5000</field>
             <field name="inherit_id" ref="xs_purchase_advance_payment.view_purchase_advance_account_payment_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='partner_id']" position="after">

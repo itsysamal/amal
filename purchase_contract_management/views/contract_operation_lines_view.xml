@@ -18,10 +18,9 @@
                                 <field name="contract_id" invisible="1"/>
                                 <field name="loading_area" string="loading Area"/>
                                 <field name="inspection_name" string="Inspection Name"/>
-                                <field name="free_time" string="Free Time" widget="float_time"
+                                <field name="free_time" string="Free Time"
                                        optional="hide"/>
-                                <field name="trans_time" string="Trans Time"
-                                       widget="float_time"/>
+                                <field name="trans_time" string="Trans Time"/>
                             </group>
                             <group>
                                 <field name="clearance_agent_id" string="Clearance Agent Name"/>

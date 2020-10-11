@@ -36,14 +36,14 @@ class PurchaseContract(models.Model):
                                           domain="[('contract','=',True)]", required=True)
     product_brand_origin = fields.Many2one('product.brand', string="Origin")
 
-    quantity = fields.Integer(string="Quantity", required=True, default=1.0, tracking=True)
-    ship_qty = fields.Integer(string="Ship QTY", compute="_compute_ship_qty", store=True, tracking=True)
-    close_reconcile_qty = fields.Integer(string="Close Reconcile QTY", tracking=True)
-    ship_remaining_qty = fields.Integer(string="Ship Remaining QTY", compute="_compute_ship_remaining_qty", store=True,
-                                        tracking=True)
-    po_qty = fields.Integer(string="PO QTY", compute="_compute_po_qty", store=True, tracking=True)
-    po_remaining_qty = fields.Integer(string="PO Remaining QTY", compute="_compute_po_remaining_qty", store=True,
+    quantity = fields.Float(string="Quantity", required=True, default=1.0, tracking=True)
+    ship_qty = fields.Float(string="Ship QTY", compute="_compute_ship_qty", store=True, tracking=True)
+    close_reconcile_qty = fields.Float(string="Close Reconcile QTY", tracking=True)
+    ship_remaining_qty = fields.Float(string="Ship Remaining QTY", compute="_compute_ship_remaining_qty", store=True,
                                       tracking=True)
+    po_qty = fields.Float(string="PO QTY", compute="_compute_po_qty", store=True, tracking=True)
+    po_remaining_qty = fields.Float(string="PO Remaining QTY", compute="_compute_po_remaining_qty", store=True,
+                                    tracking=True)
 
     unit_price = fields.Float(string="Unit Price", required=True, default=1.0, tracking=True)
     currency_id = fields.Many2one('res.currency', string="Currency", required=True, tracking=True)

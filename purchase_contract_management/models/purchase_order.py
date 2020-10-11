@@ -77,3 +77,17 @@ class PurchaseOrderLine(models.Model):
     purchase_contract_id_line = fields.Many2one('purchase.contract.line', related='order_id.purchase_contract_id_line',
                                                 string="Purchase Contract Line"
                                                 , readonly=True, store=True)
+    payment_to_link = fields.Float(sring="Payment To Link")
+    account_payment_ids = fields.Many2many('account.payment', string="Payments", compute='compute_account_payment_ids')
+    account_payment_id = fields.Many2one('account.payment', string="Payments")
+
+    @api.depends('order_id.account_payment_ids', 'contract_id.account_payment_ids')
+    def compute_account_payment_ids(self):
+        for po_line in self:
+            payments_obj = self.env['account.payment'].search([('partner_id', '=', po_line.partner_id.id)])
+            payments = []
+            # for rec in po_line.order_id.account_payment_ids:
+            #     payments.append(rec.id)
+            for pay in payments_obj:
+                payments.append(pay.id)
+            po_line.account_payment_ids = [(6, 0, payments)]
