@@ -60,3 +60,13 @@ class AccountPayment(models.Model):
         for rec in self:
             rec.contract_id.total_advance_payment -= rec.amount
         return res
+
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        res = super(AccountPayment, self)._onchange_partner_id()
+        self.contract_id = False
+        return res
+
+    @api.onchange('contract_id')
+    def _onchange_contract_id(self):
+        self.purchase_id = False
