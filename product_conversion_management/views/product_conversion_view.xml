@@ -1,0 +1,125 @@
+<odoo>
+    <data>
+        <record id="product_conversion_form_view" model="ir.ui.view">
+            <field name="name">product.conversion.form.view</field>
+            <field name="model">product.conversion</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button string="Check Availability" name="check_quants_availability" states="draft"
+                                type="object" class="oe_highlight"/>
+                        <button string="Confirm" name="action_confirm" states="assigned" type="object"
+                                class="oe_highlight"/>
+                        <button string="Cancel" name="action_cancel" states="draft" type="object" class="oe_highlight"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,assigned,done"/>
+                    </header>
+                    <sheet string="Product Conversion">
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" icon="fa-shopping-basket" type="object"
+                                    name="action_stock_picking" context="{'create': False, 'import': False}">
+                                <field name="stock_picking_count" string="Picking"
+                                       widget="statinfo" class="o_stat_value"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" required="1"/>
+                            </h1>
+                        </div>
+                        <group name="Information">
+                            <group>
+                                <field name="conversion_date" string="Date &amp; Time"/>
+                                <field name="picking_type_id" options="{'no_create': True}"
+                                       groups="stock.group_stock_multi_locations"/>
+                                <field name="partner_shipping_id" string="Partner"/>
+                                <field name="procurement_group_id_in" readonly="1" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="procurement_group_id" readonly="1" invisible="1"/>
+                                <field name="company_id" groups="base.group_multi_company"
+                                       options="{'no_create': True}"/>
+                                <field name="warehouse_id" options="{'no_create': True}"
+                                       groups="stock.group_stock_multi_warehouses" force_save="1"/>
+                            </group>
+                        </group>
+                        <group string="Remove"/>
+                        <div name="product_remove" string="Remove">
+                            <field name="check_availability" readonly="1" invisible="1"/>
+                            <field name="product_to_remove_ids" string="Remove"/>
+                        </div>
+                        <group string="Add"/>
+                        <div name="product_add" string="Add">
+                            <field name="product_to_add_ids"/>
+                        </div>
+                        <div name="stock_picking">
+                            <field name="stock_picking_ids" invisible="1"/>
+                        </div>
+                    </sheet>
+                    <div class="oe_chatter" name="contract_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        <record id="product_conversion_tree_view" model="ir.ui.view">
+            <field name="name">product.conversion.tree.view</field>
+            <field name="model">product.conversion</field>
+            <field name="arch" type="xml">
+                <tree string="Product Conversion">
+                    <field name="name"/>
+                    <field name="conversion_date" string="Date &amp; Time"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="product_conversion_view_search" model="ir.ui.view">
+            <field name="name">product.conversion.view.search</field>
+            <field name="model">product.conversion</field>
+            <field name="arch" type="xml">
+                <search string="Product Conversion">
+                    <field name="state"/>
+                    <field name="name"/>
+                    <field name="conversion_date" string="Contract Date"/>
+                    <group expand="1" string="Group By...">
+                        <filter string="State" domain="[]" name="state"
+                                context="{'group_by':'state'}"/>
+                        <filter string="Name" domain="[]" name="name"
+                                context="{'group_by':'name'}"/>
+                        <filter string="Date &amp; Time" domain="[]" name="conversion_date"
+                                context="{'group_by':'conversion_date'}"/>
+                        <separator/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Actions and Menuitems -->
+        <record id="product_conversion_action" model="ir.actions.act_window">
+            <field name="name">Product Conversion</field>
+            <field name="res_model">product.conversion</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create New Product Conversion.
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="product_conversion_parent_menu"
+                name="Product Conversion"
+                sequence="10"
+                web_icon="product_conversion_management,static/description/icon.jpg"
+        />
+        <menuitem
+                id="product_conversion_menu"
+                parent="product_conversion_parent_menu"
+                name="Product Conversion"
+                action="product_conversion_action"
+                sequence="2"
+        />
+
+    </data>
+</odoo>
