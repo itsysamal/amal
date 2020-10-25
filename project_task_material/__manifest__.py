@@ -6,7 +6,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0).
 {
     "name": "Project Task Material",
-    "summary": "Record products spent in a Task",
+    "summary": "Record products spent in a Task   ",
     "version": "13.0.1.0.1",
     "category": "Project Management",
     "author": "Daniel Reis," "Tecnativa," "Odoo Community Association (OCA)",

@@ -39,8 +39,8 @@
               <field name="power_of_attorney" optional="hide" readonly="1" />
               <field name="shipping_line" optional="hide" readonly="1" />
               <field name="bill_of_lading_number" optional="hide" readonly="1"  />
-              <field name="free_time" widget="time" optional="hide" readonly="1"  />
-              <field name="trans_time" widget="time" optional="hide" readonly="1" />
+              <field name="free_time"  widget="float_time" optional="hide" readonly="1"  />
+              <field name="trans_time"  widget="float_time" optional="hide" readonly="1" />
               <field name="courier" optional="hide" readonly="1" />
                <field name="tracking_no" optional="hide" readonly="1" />
                <field name="in_bank_date" optional="hide" readonly="1" />
@@ -70,8 +70,8 @@
               <field name="power_of_attorney" />
               <field name="shipping_line" />
               <field name="bill_of_lading_number" />
-              <field name="free_time" widget="time"/>
-              <field name="trans_time" widget="time"/>
+              <field name="free_time" widget="float_time"/>
+              <field name="trans_time" widget="float_time"/>
               <field name="courier" />
                <field name="tracking_no" />
                <field name="in_bank_date" />
