@@ -18,8 +18,8 @@ class PurchaseContractLine(models.Model):
     currency_id = fields.Many2one(related='contract_id.currency_id', store=True, string='Currency', readonly=True)
     contract_date = fields.Date(related='contract_id.contract_date', store=True, string='Contract Date', readonly=True)
 
-    product_template_id = fields.Many2one('product.template', related='contract_id.product_template_id',
-                                          string="Product Template", store=True)
+    product_id = fields.Many2one('product.product', related='contract_id.product_id',
+                                          string="Product", store=True)
     invoice_no = fields.Char("Invoice No.")
     invoice_date = fields.Date("Invoice Date")
     customs_no = fields.Char("Customs No.")
@@ -62,8 +62,8 @@ class PurchaseContractLine(models.Model):
 
     def create_purchase_order(self):
         self.purchase_created = True
-        product_product_obj = self.env['product.product'].search(
-            [('product_tmpl_id', '=', self.product_template_id.id)])
+        # product_product_obj = self.env['product.product'].search(
+        #     [('product_tmpl_id', '=', self.product_template_id.id)])
         obj_purchase = self.env['purchase.order'].create({
             'partner_id': self.vendor_id.id,
             'currency_id': self.currency_id.id,
@@ -72,10 +72,11 @@ class PurchaseContractLine(models.Model):
             'contract_id': self.contract_id.id,
             'picking_type_id': self.picking_type_id.id,
             'order_line': [(0, 0, ope) for ope in [{
-                'name': product_product_obj.name, 'product_id': product_product_obj.id,
+                'name': self.product_id.name, 'product_id': self.product_id.id,
                 'product_qty': self.quantity,
-                'product_uom': product_product_obj.uom_id.id, 'price_unit': self.contract_id.unit_price,
-                'date_planned': fields.Datetime.now()
+                'product_uom': self.product_id.uom_id.id, 'price_unit': self.contract_id.unit_price,
+                'date_planned': fields.Datetime.now(),
+                'account_analytic_id': self.product_id.gio_analytic_account.id
             }]],
         })
         # obj_purchase.button_confirm()

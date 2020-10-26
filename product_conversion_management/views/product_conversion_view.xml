@@ -45,11 +45,59 @@
                         <group string="Remove"/>
                         <div name="product_remove" string="Remove">
                             <field name="check_availability" readonly="1" invisible="1"/>
-                            <field name="product_to_remove_ids" string="Remove"/>
+                            <field name="product_to_remove_ids" string="Remove">
+                                <tree string="Product To Remove" editable="top">
+                                    <field name="name"/>
+                                    <field name="conversion_id" options="{'no_create': True}" readonly="True"/>
+                                    <field name="product_id" options="{'no_create': True}"/>
+                                    <field name="product_tmp_id" options="{'no_create': True}" invisible="1"/>
+                                    <field name="location_id" options="{'no_create': True}"/>
+                                    <field name="route_id" options="{'no_create': True}" invisible="1"/>
+                                    <field name="move_ids" options="{'no_create': True}" invisible="1"/>
+                                    <field name="lot_id" options="{'no_create': True}"
+                                           domain="[('product_id','=', product_id)]"
+                                           context="{'default_product_id': product_id}"/>
+                                    <field name="analytic_account_id" options="{'no_create': True}"/>
+                                    <field name="analytic_tag_ids" options="{'no_create': True}"/>
+                                    <field name="branch_id" options="{'no_create': True}"/>
+                                    <field name="quantity"/>
+                                    <field name="availability" readonly="1" force_save="1"/>
+                                    <field name="remaining_qty" readonly="1" force_save="1" invisible="1"/>
+
+                                    <field name="product_uom" options="{'no_create': True}"/>
+                                    <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
+                                    <field name="cost_price"/>
+                                </tree>
+                            </field>
                         </div>
                         <group string="Add"/>
                         <div name="product_add" string="Add">
-                            <field name="product_to_add_ids"/>
+                            <field name="product_to_add_ids">
+                                <tree string="Product To Add" editable="top">
+                                    <field name="name"/>
+                                    <field name="conversion_id" options="{'no_create': True}" readonly="True"/>
+                                    <field name="product_id" options="{'no_create': True}"/>
+                                    <field name="product_tmp_id" options="{'no_create': True}" invisible="1"/>
+                                    <field name="date_planned"/>
+                                    <field name="location_id" options="{'no_create': True}"/>
+                                    <field name="lot_id" options="{'no_create': True}"
+                                           domain="[('product_id','=', product_id)]"
+                                           context="{'default_product_id': product_id}"/>
+                                    <field name="analytic_account_id" options="{'no_create': True}"/>
+                                    <field name="analytic_tag_ids" options="{'no_create': True}"/>
+                                    <field name="branch_id" options="{'no_create': True}"/>
+                                    <field name="quantity"/>
+                                    <field name="product_uom" options="{'no_create': True}"/>
+                                    <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
+                                    <field name="fixed_percentage"/>
+                                    <field name="percentage"
+                                           attrs="{'readonly': [('fixed_percentage', '!=', 'percentage')]}"/>
+                                    <field name="new_cost_price_edit"
+                                           attrs="{'readonly': [('fixed_percentage', '!=', 'fixed')]}"/>
+                                    <field name="new_cost_price"/>
+
+                                </tree>
+                            </field>
                         </div>
                         <div name="stock_picking">
                             <field name="stock_picking_ids" invisible="1"/>

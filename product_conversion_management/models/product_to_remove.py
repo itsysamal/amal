@@ -13,52 +13,57 @@ class ProductRemove(models.Model):
 
     name = fields.Char(string="Name", required=True, copy=False)
     conversion_id = fields.Many2one('product.conversion', string="Product Conversion")
-    product_tmp_id = fields.Many2one('product.template', string="Product Template", required=True)
-    product_id = fields.Many2one('product.product', related='product_tmp_id.product_variant_id', string="Product",
-                                 store=True)
-    location_id = fields.Many2one('stock.location', string="Inventory Locations")
+    product_id = fields.Many2one('product.product', string="Product", required=True)
+    product_tmp_id = fields.Many2one('product.template', related='product_id.product_tmpl_id',
+                                     string="Product Template", store=True)
+    location_id = fields.Many2one('stock.location', string="Inventory Locations", required=True)
     lot_id = fields.Many2one('stock.production.lot', string="Lot /Serial")
-    analytic_account_id = fields.Many2one("account.analytic.account", related='product_tmp_id.gio_analytic_account',
+    analytic_account_id = fields.Many2one("account.analytic.account", related='product_id.gio_analytic_account',
                                           store=True, string='Analytic Account')
     analytic_tag_ids = fields.Many2one("account.analytic.tag", string='Analytic Tags', store=True,
-                                       related='product_tmp_id.gio_analytic_tag')
+                                       related='product_id.gio_analytic_tag')
     product_uom = fields.Many2one('uom.uom', string='UOM',
                                   domain="[('category_id', '=', product_uom_category_id)]")
-    product_uom_category_id = fields.Many2one(related='product_tmp_id.uom_id.category_id', readonly=True)
+    product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True)
     branch_id = fields.Many2one('res.branch', string='Branch')
-    quantity = fields.Float(string="Quantity")
+    quantity = fields.Float(string="Quantity", default=1.0)
     remaining_qty = fields.Float(string="Remaining quantity")
-    availability = fields.Float(string="Available")
+    availability = fields.Float(string="Available", store=True)
 
     cost_price = fields.Float(string="Cost Price", compute='compute_inventory_valuation_cost_price')
     move_ids = fields.One2many('stock.move', 'product_remove_id', string='Stock Moves')
     route_id = fields.Many2one('stock.location.route', string='Route', domain=[('sale_selectable', '=', True)],
                                ondelete='restrict', check_company=True)
 
-    @api.onchange('location_id', 'product_tmp_id', 'quantity')
+    @api.onchange('location_id', 'product_id', 'quantity')
     def onchange_location_id(self):
         # TDE FIXME: should'nt we use context / location ?
-        if self.location_id and self.product_tmp_id:
-            # availability = self.product_tmp_id.product_variant_id._product_available()
-            # self.availability = availability[self.product_tmp_id.product_variant_id.id]['qty_available']
+        if self.location_id and self.product_id:
+            # availability = self.product_id.product_variant_id._product_available()
+            # self.availability = availability[self.product_id.product_variant_id.id]['qty_available']
             total_availability = self.env['stock.quant']._get_available_quantity(self.product_id,
                                                                                  self.location_id, strict=True)
             self.availability = total_availability
             self.remaining_qty = self.quantity - total_availability
             self.product_uom = self.product_id.uom_id
 
-    @api.depends('product_tmp_id')
+    @api.depends('product_id', 'availability', 'quantity')
     def compute_inventory_valuation_cost_price(self):
         for product in self:
             value = 0.0
+            quantity = 0.0
             remaining_qty = 0.0
             stock_valuation_object = self.env['stock.valuation.layer'].search([
-                ('product_tmpl_id', '=', product.product_tmp_id.id)
+                ('product_id', '=', product.product_id.id)
             ])
             for stock in stock_valuation_object:
+                quantity += stock.quantity
                 value += stock.value
                 remaining_qty += stock.remaining_qty
-            product.cost_price = value
+            if product.availability and quantity:
+                product.cost_price = (value / quantity) * product.quantity
+            else:
+                product.cost_price = 0.0
 
     @api.constrains('quantity')
     def quantity_percentage_not_minus(self):

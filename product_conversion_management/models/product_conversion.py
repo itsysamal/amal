@@ -93,7 +93,7 @@ class ProductConversion(models.Model):
         for record in self.product_to_remove_ids:
             if record.location_id:
                 domain_quants = [
-                    ('product_id', '=', record.product_tmp_id.product_variant_id.id),
+                    ('product_id', '=', record.product_id.id),
                     ('location_id', '=', record.location_id.id)
                 ]
                 quants = self.env['stock.quant'].read_group(
@@ -104,11 +104,11 @@ class ProductConversion(models.Model):
                     raise UserError(
                         _("Product %s not have availability in %s. \n\n"
                           "Please check your inventory, receipts or deliveries"
-                          % (record.product_tmp_id.product_variant_id.name, record.location_id.name)))
+                          % (record.product_id.name, record.location_id.name)))
                 elif record.quantity > total_qty:
                     raise UserError(
                         _("Product %s only has %s %s available in %s."
-                          % (record.product_tmp_id.product_variant_id.name, total_qty,
+                          % (record.product_id.name, total_qty,
                              record.product_uom.name, record.location_id.name)))
                 else:
                     self.check_availability = True

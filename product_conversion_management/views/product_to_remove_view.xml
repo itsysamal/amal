@@ -4,7 +4,7 @@
             <field name="name">product.remove.form.view</field>
             <field name="model">product.remove</field>
             <field name="arch" type="xml">
-                <form>
+                <form create="0" edit="0" delete="0" import="0">
                     <sheet string="Product To Remove">
                         <div class="oe_title">
                             <h1>
@@ -14,9 +14,8 @@
                         <group>
                             <group>
                                 <field name="conversion_id" options="{'no_create': True}"/>
-                                <field name="product_tmp_id" options="{'no_create': True}"/>
-                                <field name="product_id" options="{'no_create': True}" invisible="1"/>
-
+                                <field name="product_id" options="{'no_create': True}"/>
+                                <field name="product_tmp_id" options="{'no_create': True}" invisible="1"/>
                                 <field name="location_id" options="{'no_create': True}"/>
                                 <field name="lot_id" options="{'no_create': True}"
                                        domain="[('product_id','=', product_id)]"
@@ -42,11 +41,11 @@
             <field name="name">product.remove.tree.view</field>
             <field name="model">product.remove</field>
             <field name="arch" type="xml">
-                <tree string="Product To Remove" editable="top">
+                <tree string="Product To Remove" editable="top" create="0" edit="0" delete="0" import="0">
                     <field name="name"/>
                     <field name="conversion_id" options="{'no_create': True}" readonly="True"/>
-                    <field name="product_tmp_id" options="{'no_create': True}"/>
-                    <field name="product_id" options="{'no_create': True}" invisible="1"/>
+                    <field name="product_id" options="{'no_create': True}"/>
+                    <field name="product_tmp_id" options="{'no_create': True}" invisible="1"/>
                     <field name="location_id" options="{'no_create': True}"/>
                     <field name="route_id" options="{'no_create': True}" invisible="1"/>
                     <field name="move_ids" options="{'no_create': True}" invisible="1"/>
@@ -81,8 +80,8 @@
                     <group expand="1" string="Group By...">
                         <filter string="Product Conversion" domain="[]" name="conversion_id"
                                 context="{'group_by':'conversion_id'}"/>
-                        <filter string="Product" domain="[]" name="product_tmp_id"
-                                context="{'group_by':'product_tmp_id'}"/>
+                        <filter string="Product" domain="[]" name="product_id"
+                                context="{'group_by':'product_id'}"/>
 
                         <filter string="Inventory Locations" domain="[]" name="location_id"
                                 context="{'group_by':'location_id'}"/>

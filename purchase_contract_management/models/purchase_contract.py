@@ -32,7 +32,7 @@ class PurchaseContract(models.Model):
     containers_no = fields.Char("Containers No.")
     packages_id = fields.Many2one('stock.quant.package', string="Packages")
     packing_type = fields.Char(string="Packing type")
-    product_template_id = fields.Many2one('product.template', string="Product Template",
+    product_id = fields.Many2one('product.product', string="Product",
                                           domain="[('contract','=',True)]", required=True)
     product_brand_origin = fields.Many2one('product.brand', string="Origin")
 
@@ -185,11 +185,11 @@ class PurchaseContract(models.Model):
                 if contract.contract_date > contract.shipping_date:
                     raise ValidationError(_('Shipping date should not be date before contract date.'))
 
-    @api.constrains('product_template_id')
+    @api.constrains('product_id')
     def _constrains_product_id(self):
         for contract in self:
-            if contract.product_template_id != False:
-                if contract.product_template_id.contract != True:
+            if contract.product_id != False:
+                if contract.product_id.contract != True:
                     raise ValidationError(_('You should select products with contract checkbox only.'))
 
     @api.constrains('quantity', 'close_reconcile_qty', 'unit_price')

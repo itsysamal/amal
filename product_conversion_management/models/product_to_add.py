@@ -13,41 +13,46 @@ class ProductAdd(models.Model):
 
     name = fields.Char(string="Name", required=True, copy=False)
     conversion_id = fields.Many2one('product.conversion', string="Product Conversion")
-    product_tmp_id = fields.Many2one('product.template', string="Product Template", required=True)
-    product_id = fields.Many2one('product.product', related='product_tmp_id.product_variant_id', string="Product",
-                                 store=True)
-    location_id = fields.Many2one('stock.location', string="Inventory Locations")
+    product_id = fields.Many2one('product.product', string="Product", required=True)
+    product_tmp_id = fields.Many2one('product.template', related='product_id.product_tmpl_id',
+                                     string="Product Template", store=True)
+    location_id = fields.Many2one('stock.location', string="Inventory Locations", required=True)
     lot_id = fields.Many2one('stock.production.lot', string="Lot /Serial")
     analytic_account_id = fields.Many2one("account.analytic.account", string='Analytic Account')
     analytic_tag_ids = fields.Many2one("account.analytic.tag", string='Analytic Tags')
     branch_id = fields.Many2one('res.branch', string='Branch')
-    quantity = fields.Float(string="Quantity")
+    quantity = fields.Float(string="Quantity", default=1.0)
     product_uom = fields.Many2one('uom.uom', string='UOM',
                                   domain="[('category_id', '=', product_uom_category_id)]")
-    product_uom_category_id = fields.Many2one(related='product_tmp_id.uom_id.category_id', readonly=True)
+    product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True)
 
     percentage = fields.Integer(string="%")
+    fixed_percentage = fields.Selection([('fixed', 'Fixed'),
+                                         ('percentage', 'Percentage')],
+                                        'Cost Type', required=True,
+                                        copy=False, tracking=True)
     remaining_qty = fields.Float(string="Remaining quantity")
     availability = fields.Float(string="Available")
     new_cost_price = fields.Float(string="New Cost Price",
                                   compute='compute_inventory_valuation_new_cost_price')
+    new_cost_price_edit = fields.Float(string="Fixed Cost Price")
     move_ids = fields.One2many('stock.move', 'product_add_id', string='Stock Moves')
     move_dest_ids = fields.One2many('stock.move', 'created_purchase_line_id', 'Downstream Moves')
 
     date_planned = fields.Datetime(string='Scheduled Date', index=True, required=True)
 
-    @api.onchange('location_id', 'product_tmp_id', 'quantity')
+    @api.onchange('location_id', 'product_id', 'quantity')
     def onchange_location_id(self):
         # TDE FIXME: should'nt we use context / location ?
-        if self.location_id and self.product_tmp_id:
+        if self.location_id and self.product_id:
             total_availability = self.env['stock.quant']._get_available_quantity(self.product_id,
                                                                                  self.location_id, strict=True)
             self.availability = total_availability
             self.remaining_qty = self.quantity - total_availability
-        if self.product_tmp_id:
+        if self.product_id:
             self.product_uom = self.product_id.uom_id
-            self.analytic_account_id = self.product_tmp_id.gio_analytic_account
-            self.analytic_tag_ids = self.product_tmp_id.gio_analytic_tag
+            self.analytic_account_id = self.product_id.gio_analytic_account
+            self.analytic_tag_ids = self.product_id.gio_analytic_tag
 
     @api.constrains('quantity', 'percentage')
     def quantity_percentage_not_minus(self):
@@ -58,17 +63,23 @@ class ProductAdd(models.Model):
             if product.percentage < 0:
                 raise ValidationError('Please enter a positive number in Percentage')
 
-    @api.depends('product_tmp_id', 'percentage', 'conversion_id', 'conversion_id.product_to_remove_ids')
+    @api.depends('product_id', 'percentage', 'conversion_id', 'conversion_id.product_to_remove_ids', 'fixed_percentage',
+                 'new_cost_price_edit')
     def compute_inventory_valuation_new_cost_price(self):
         for rec in self:
             total_cost_of_remove = 0.0
             for product in self.conversion_id.product_to_remove_ids:
                 total_cost_of_remove += product.cost_price
 
-            if total_cost_of_remove > 0:
+            if total_cost_of_remove > 0 and rec.fixed_percentage == 'percentage':
                 rec.new_cost_price = (total_cost_of_remove * rec.percentage) / 100
+                rec.new_cost_price_edit = 0.0
+            elif rec.fixed_percentage == 'fixed':
+                rec.new_cost_price = rec.new_cost_price_edit
+                rec.percentage = 0.0
             else:
                 rec.new_cost_price = 0.0
+                rec.new_cost_price_edit = 0.0
 
     def _get_destination_location(self):
         self.ensure_one()

@@ -30,6 +30,35 @@
             </xpath>
         </field>
     </record>
+    <record id="view_inherit_product_product_form_analytic" model="ir.ui.view">
+        <field name="name">view.inherit.product_product.form</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <field name="barcode" position="after">
+                <field name="gio_analytic_account" string="Analytic Account" readonly="True"/>
+                <field name="gio_analytic_tag" string="Analytic Tag"/>
+            </field>
+            <!--doaa added-->
+            <xpath expr="//field[@name='default_code']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_inherit_product_product_form_analytic_with_access" model="ir.ui.view">
+        <field name="name">view.inherit.product_product.form</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="groups_id" eval="[(4, ref('gio_product_analytic.create_analytic_account'))]"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='gio_analytic_account']" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </xpath>
+            <xpath expr="//field[@name='default_code']" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </xpath>
+        </field>
+    </record>
     <!--added by doaa-->
     <record id="view_account_analytic_account_form_inherit_product" model="ir.ui.view">
         <field name="name">view.account.analytic.account.inherit.product</field>

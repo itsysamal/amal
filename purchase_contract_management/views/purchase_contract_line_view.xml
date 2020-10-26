@@ -27,7 +27,7 @@
                                 <field name="vendor_id" invisible="1"/>
                                 <field name="currency_id" invisible="1"/>
                                 <field name="contract_date" invisible="1"/>
-                                <field name="product_template_id"/>
+                                <field name="product_id"/>
                                 <field name="picking_type_id" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
                                 <field name="invoice_no" string="Invoice No."
                                        attrs="{'readonly': [('purchase_created', '=', True)]}"/>
@@ -65,7 +65,7 @@
                     <field name="contract_id" invisible="1"/>
                     <field name="purchase_id" invisible="1"/>
                     <field name="name" modifiers="{}" string="Shipping line"/>
-                    <field name="product_template_id"/>
+                    <field name="product_id"/>
                     <field name="picking_type_id"/>
                     <field name="invoice_no" string="Invoice No."/>
                     <field name="invoice_date" string="Invoice Date"/>
@@ -92,7 +92,7 @@
                     <field name="contract_id"/>
                     <field name="purchase_id"/>
                     <field name="name"/>
-                    <field name="product_template_id"/>
+                    <field name="product_id"/>
                     <field name="invoice_date"/>
                     <field name="customs_date"/>
                     <field name="arrival_date"/>
@@ -104,8 +104,8 @@
                     <group expand="1" string="Group By...">
                         <filter string="Contract" domain="[]" name="contract_id"
                                 context="{'group_by':'contract_id'}"/>
-                        <filter string="Product" domain="[]" name="product_template_id"
-                                context="{'group_by':'product_template_id'}"/>
+                        <filter string="Product" domain="[]" name="product_id"
+                                context="{'group_by':'product_id'}"/>
 
                         <filter string="Invoice Date" domain="[]" name="invoice_date"
                                 context="{'group_by':'invoice_date'}"/>

@@ -11,5 +11,15 @@
                 </xpath>
             </field>
         </record>
+        <record id="view_inherit_product_product_form_contract" model="ir.ui.view">
+            <field name="name">view.inherit.product_product.form</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='uom_po_id']" position="after">
+                    <field name="contract"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>
