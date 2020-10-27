@@ -148,8 +148,7 @@ class SaleContract(models.Model):
 
     def action_account_move(self):
         [action] = self.env.ref('account.action_move_out_invoice_type').read()
-        action['domain'] = [('sale_contract_id', 'in', self.ids), ('type', '=', 'out_invoice'),
-                            ('journal_type', '=', 'sale')]
+        action['domain'] = [('sale_contract_id', 'in', self.ids), ('type', '=', 'out_invoice')]
         return action
 
     def btn_advance_payment(self):

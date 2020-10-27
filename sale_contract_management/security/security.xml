@@ -65,7 +65,7 @@
         </record>
 
         <record id="group_create_advance_payment_sale_contract_confirmed" model="res.groups">
-            <field name="name">Create Advance Payment Confirmed From sale Contract</field>
+            <field name="name">Create Advance Payment Confirmed From Sale Contract</field>
             <field name="category_id" ref="base.module_category_hidden"/>
         </record>
     </data>
