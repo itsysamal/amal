@@ -14,6 +14,7 @@ class SaleOrder(models.Model):
         res = super(SaleOrder, self)._prepare_invoice()
         for rec in self:
             res['sale_contract_id'] = rec.sale_contract_id.id
+            res['check_invoice'] = True
         return res
 
     def action_cancel(self):
@@ -50,6 +51,7 @@ class SaleOrder(models.Model):
                    'active_ids': [],
                    'active_model': self._name,
                    'active_id': self.id,
+                   'default_sale_check_contract_payment': True,
                    }
 
         ctx = self._context.copy()

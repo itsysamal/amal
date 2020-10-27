@@ -5,7 +5,7 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     sale_contract_id = fields.Many2one('sale.contract', string="Sale Contract", readonly=True)
-
+    check_invoice = fields.Boolean(copy=False)
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
