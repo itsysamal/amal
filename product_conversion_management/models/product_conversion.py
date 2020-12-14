@@ -169,8 +169,27 @@ class ProductConversion(models.Model):
                 line.name, line.conversion_id.name, line.conversion_id.company_id, values))
         if procurements:
             self.env['procurement.group'].run(procurements)
-
         return True
 
     def action_cancel(self):
         self.write({'state': 'cancel'})
+
+
+class ProductConversionInh(models.Model):
+    _inherit = 'product.conversion'
+
+    def action_confirm(self):
+        res = super(ProductConversionInh, self).action_confirm()
+        for do_pick in self.stock_picking_ids:
+            for move in do_pick.move_ids_without_package:
+                for line in self.product_to_remove_ids:
+                    if move.conversion_id == line.conversion_id and not move.product_add_id \
+                            and move.product_id == line.product_id:
+                        move.write({"analytic_account_id": line.analytic_account_id.id,
+                                    "analytic_tag_ids": [(6, 0, line.analytic_tag_ids.ids)]})
+                for order in self.product_to_add_ids:
+                    if move.conversion_id == order.conversion_id and move.product_add_id == order.id:
+                        move.write({"analytic_account_id": order.analytic_account_id.id,
+                                    "analytic_tag_ids": [(6, 0, order.analytic_tag_ids.ids)]})
+
+        return res

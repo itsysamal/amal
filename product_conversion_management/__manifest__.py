@@ -18,7 +18,7 @@
         'views/product_to_add_view.xml',
         'views/stock_picking_view.xml',
     ],
-    'depends': ['base','stock','product','account','branch'],
+    'depends': ['base','stock','product','account','branch','stock_analytic','stock_analytic_tag'],
     'installable': True,
     'auto_install': False,
     'application': True,

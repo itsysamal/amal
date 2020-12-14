@@ -152,6 +152,8 @@ class ProductAdd(models.Model):
             'picking_type_id': self.conversion_id.picking_type_id.id,
             'group_id': self.conversion_id.procurement_group_id_in.id,
             'origin': self.conversion_id.name,
+            'analytic_account_id': self.analytic_account_id.id,
+            'analytic_tag_ids': self.analytic_tag_ids.ids,
             # 'propagate_date': self.propagate_date,
             # 'propagate_date_minimum_delta': self.propagate_date_minimum_delta,
             'description_picking': self.product_id._get_description(self.conversion_id.picking_type_id),
