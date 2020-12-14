@@ -31,15 +31,85 @@ class ProductAdd(models.Model):
                                          ('percentage', 'Percentage')],
                                         'Cost Type', required=True,
                                         copy=False, tracking=True)
+    editable_unit_price = fields.Float(string="Fixed Unit Price")
+    unit_price = fields.Float(string="Unit Price", compute='compute_unit_price')
+    cost_price = fields.Float(string="Cost Price", compute='compute_cost_price')
     remaining_qty = fields.Float(string="Remaining quantity")
     availability = fields.Float(string="Available")
-    new_cost_price = fields.Float(string="New Cost Price",
+    allocate_expense = fields.Float(string="Allocate Expense", compute='compute_allocate_expense')
+
+    remaining_cost = fields.Float(string="Remaining Cost", compute='compute_remaining_cost')
+    new_cost_price_edit = fields.Float(string="Final Cost", compute='compute_final_cost')
+    final_item_cost = fields.Float(string="Final Item Cost", compute='compute_final_item_cost')
+    new_cost_price = fields.Float(string="Final Item Cost",
                                   compute='compute_inventory_valuation_new_cost_price')
-    new_cost_price_edit = fields.Float(string="Fixed Cost Price")
+
     move_ids = fields.One2many('stock.move', 'product_add_id', string='Stock Moves')
     move_dest_ids = fields.One2many('stock.move', 'created_purchase_line_id', 'Downstream Moves')
 
     date_planned = fields.Datetime(string='Scheduled Date', index=True, required=True)
+
+    @api.depends('product_id', 'unit_price', 'quantity','editable_unit_price')
+    def compute_cost_price(self):
+        for product in self:
+            if product.quantity and product.unit_price:
+                product.cost_price = product.unit_price * product.quantity
+            elif product.quantity and product.editable_unit_price:
+                product.cost_price = product.editable_unit_price * product.quantity
+            else:
+                product.cost_price = 0.0
+
+    @api.depends('cost_price', 'allocate_expense')
+    def compute_final_cost(self):
+        for product in self:
+            if product.allocate_expense and product.cost_price:
+                product.new_cost_price_edit = product.cost_price + product.allocate_expense
+            else:
+                product.new_cost_price_edit = 0.0
+
+    @api.depends('new_cost_price_edit', 'quantity')
+    def compute_final_item_cost(self):
+        for product in self:
+            if product.new_cost_price_edit and product.quantity:
+                product.final_item_cost = product.new_cost_price_edit / product.quantity
+            else:
+                product.final_item_cost = 0.0
+
+    @api.depends('product_id', 'quantity', 'percentage', 'conversion_id',
+                 'conversion_id.product_to_remove_ids', 'conversion_id.product_to_remove_ids.cost_price','fixed_percentage')
+    def compute_unit_price(self):
+        for product in self:
+            total_cost_of_remove = 0.0
+            for remove in product.conversion_id.product_to_remove_ids:
+                total_cost_of_remove += remove.cost_price
+            if total_cost_of_remove and product.quantity and product.percentage and product.fixed_percentage == 'percentage':
+                product.unit_price = (total_cost_of_remove * (product.percentage/100)) / product.quantity
+            else:
+                product.unit_price = 0.0
+
+    @api.depends('conversion_id','cost_price',
+                 'conversion_id.product_to_remove_ids', 'conversion_id.product_to_remove_ids.cost_price')
+    def compute_remaining_cost(self):
+        for product in self:
+            total_cost_of_remove = 0.0
+            for remove in product.conversion_id.product_to_remove_ids:
+                total_cost_of_remove += remove.cost_price
+            if total_cost_of_remove and product.cost_price:
+                product.remaining_cost = product.cost_price - (total_cost_of_remove/2)
+            else:
+                product.remaining_cost = 0.0
+
+    @api.depends('product_id', 'unit_price', 'conversion_id',
+                 'conversion_id.product_expense_ids', 'conversion_id.product_expense_ids.quantity')
+    def compute_allocate_expense(self):
+        for product in self:
+            total_unit_price = 0.0
+            for remove in product.conversion_id.product_expense_ids:
+                total_unit_price += remove.unit_price
+            if total_unit_price and product.quantity:
+                product.allocate_expense = total_unit_price * product.quantity
+            else:
+                product.allocate_expense = 0.0
 
     @api.onchange('location_id', 'product_id', 'quantity')
     def onchange_location_id(self):
@@ -112,7 +182,7 @@ class ProductAdd(models.Model):
     def _get_stock_move_price_unit(self):
         self.ensure_one()
         line = self[0]
-        price_unit = line.new_cost_price
+        price_unit = line.final_item_cost
         if line.product_uom.id != line.product_id.uom_id.id:
             price_unit *= line.product_uom.factor / line.product_id.uom_id.factor
         return price_unit

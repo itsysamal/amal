@@ -1,11 +1,11 @@
 <odoo>
     <data>
-        <record id="product_remove_form_view" model="ir.ui.view">
-            <field name="name">product.remove.form.view</field>
-            <field name="model">product.remove</field>
+        <record id="product_expense_form_view" model="ir.ui.view">
+            <field name="name">product.expense.form.view</field>
+            <field name="model">product.expense</field>
             <field name="arch" type="xml">
                 <form create="0" edit="0" delete="0" import="0">
-                    <sheet string="Product To Remove">
+                    <sheet string="Allocated Expenses">
                         <div class="oe_title">
                             <h1>
                                 <field name="name" required="1" string="Name"/>
@@ -16,20 +16,15 @@
                                 <field name="conversion_id" options="{'no_create': True}"/>
                                 <field name="product_id" options="{'no_create': True}"/>
                                 <field name="product_tmp_id" options="{'no_create': True}" invisible="1"/>
-                                <field name="location_id" options="{'no_create': True}"/>
-                                <field name="lot_id" options="{'no_create': True}"
-                                       domain="[('product_id','=', product_id)]"
-                                       context="{'default_product_id': product_id}"/>
                                 <field name="analytic_account_id" options="{'no_create': True}"/>
                             </group>
                             <group>
-                                <field name="analytic_tag_ids"/>
-                                <field name="branch_id"/>
+                                <field name="analytic_tag_ids" options="{'no_create': True}"/>
+                                <field name="branch_id" options="{'no_create': True}"/>
                                 <field name="quantity"/>
-                                <field name="availability" readonly="1" force_save="1"/>
-                                <field name="remaining_qty" readonly="1" force_save="1" invisible="1"/>
                                 <field name="product_uom" options="{'no_create': True}"/>
                                 <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
+                                <field name="unit_price"/>
                                 <field name="cost_price"/>
                             </group>
                         </group>
@@ -37,45 +32,34 @@
                 </form>
             </field>
         </record>
-        <record id="product_remove_tree_view" model="ir.ui.view">
-            <field name="name">product.remove.tree.view</field>
-            <field name="model">product.remove</field>
+        <record id="product_expense_tree_view" model="ir.ui.view">
+            <field name="name">product.expense.tree.view</field>
+            <field name="model">product.expense</field>
             <field name="arch" type="xml">
-                <tree string="Product To Remove" editable="top" create="0" edit="0" delete="0" import="0">
+                <tree string="Allocated Expenses" editable="top" create="0" edit="0" delete="0" import="0">
                     <field name="name"/>
                     <field name="conversion_id" options="{'no_create': True}" readonly="True"/>
                     <field name="product_id" options="{'no_create': True}"/>
                     <field name="product_tmp_id" options="{'no_create': True}" invisible="1"/>
-                    <field name="location_id" options="{'no_create': True}"/>
-                    <field name="route_id" options="{'no_create': True}" invisible="1"/>
-                    <field name="move_ids" options="{'no_create': True}" invisible="1"/>
-                    <field name="lot_id" options="{'no_create': True}" domain="[('product_id','=', product_id)]"
-                           context="{'default_product_id': product_id}"/>
                     <field name="analytic_account_id" options="{'no_create': True}"/>
                     <field name="analytic_tag_ids" options="{'no_create': True}"/>
                     <field name="branch_id" options="{'no_create': True}"/>
                     <field name="quantity" sum="Quantity"/>
-                    <!--<field name="fixed_percentage"/>-->
-                    <field name="unit_price" sum="Unit Price"/>
-                    <field name="availability" readonly="1" force_save="1" sum="Availability"/>
-                    <field name="remaining_qty" readonly="1" force_save="1" invisible="1"/>
-
                     <field name="product_uom" options="{'no_create': True}"/>
                     <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
+                    <field name="unit_price" sum="Unit Price"/>
                     <field name="cost_price" sum="Cost Price"/>
                 </tree>
             </field>
         </record>
-        <record id="product_remove_view_search" model="ir.ui.view">
-            <field name="name">product.remove.view.search</field>
-            <field name="model">product.remove</field>
+        <record id="product_expense_view_search" model="ir.ui.view">
+            <field name="name">product.expense.view.search</field>
+            <field name="model">product.expense</field>
             <field name="arch" type="xml">
-                <search string="Product To Remove">
+                <search string="Allocated Expenses">
                     <field name="conversion_id"/>
                     <field name="product_tmp_id"/>
                     <field name="product_id"/>
-                    <field name="location_id"/>
-                    <field name="lot_id"/>
                     <field name="analytic_account_id"/>
                     <field name="analytic_tag_ids"/>
                     <field name="branch_id"/>
@@ -84,18 +68,12 @@
                                 context="{'group_by':'conversion_id'}"/>
                         <filter string="Product" domain="[]" name="product_id"
                                 context="{'group_by':'product_id'}"/>
-
-                        <filter string="Inventory Locations" domain="[]" name="location_id"
-                                context="{'group_by':'location_id'}"/>
-                        <filter string="Lot /Serial" domain="[]" name="lot_id"
-                                context="{'group_by':'lot_id'}"/>
                         <filter string="Analytic Account" domain="[]" name="analytic_account_id"
                                 context="{'group_by':'analytic_account_id'}"/>
                         <filter string="Analytic Tags" domain="[]" name="analytic_tag_ids"
                                 context="{'group_by':'analytic_tag_ids'}"/>
                         <filter string="Branch" domain="[]" name="branch_id"
                                 context="{'group_by':'branch_id'}"/>
-
                         <separator/>
                     </group>
                 </search>
@@ -103,23 +81,23 @@
         </record>
 
         <!-- Actions and Menuitems -->
-        <record id="product_remove_action" model="ir.actions.act_window">
-            <field name="name">Product To Remove</field>
-            <field name="res_model">product.remove</field>
+        <record id="product_expense_action" model="ir.actions.act_window">
+            <field name="name">Allocated Expenses</field>
+            <field name="res_model">product.expense</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Create New Product To Remove.
+                    Create New Allocated Expenses
                 </p>
             </field>
         </record>
 
         <menuitem
-                id="product_remove_menu"
+                id="product_expense_menu"
                 parent="product_conversion_management.product_conversion_parent_menu"
-                name="Product To Remove"
-                action="product_remove_action"
-                sequence="2"
+                name="Allocated Expenses"
+                action="product_expense_action"
+                sequence="4"
         />
     </data>
 </odoo>

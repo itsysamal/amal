@@ -28,7 +28,7 @@ class AccountPayments(models.Model):
     apply_manual_currency_exchange = fields.Boolean(string='Apply Manual Currency Exchange')
     manual_currency_exchange_rate = fields.Float(string='Manual Currency Exchange Rate')
     active_manual_currency_rate = fields.Boolean('active Manual Currency', default=False)
-
+    check_payment_from_dashboard = fields.Boolean(default=False)
 
     @api.onchange('currency_id')
     def onchange_currency_id(self):
@@ -39,14 +39,17 @@ class AccountPayments(models.Model):
                 self.active_manual_currency_rate = False
         else:
             self.active_manual_currency_rate = False
-            
+
     @api.model
     def default_get(self, fields):
         result = super(AccountPayments, self).default_get(fields)
-        move_id = self.env['account.move'].browse(self._context.get('active_ids')).filtered(lambda move: move.is_invoice(include_receipts=True))
-        result.update({
-            'apply_manual_currency_exchange':move_id.apply_manual_currency_exchange,
-            'manual_currency_exchange_rate':move_id.manual_currency_exchange_rate
+        if self.check_payment_from_dashboard != False:
+            move_id = self.env['account.move'].browse(self._context.get('active_ids')).filtered(
+                lambda move: move.is_invoice(include_receipts=True))
+
+            result.update({
+                'apply_manual_currency_exchange': move_id.apply_manual_currency_exchange,
+                'manual_currency_exchange_rate': move_id.manual_currency_exchange_rate
             })
         return result
 
@@ -94,12 +97,11 @@ class AccountPayments(models.Model):
                 total += res['residual_currency']
             else:
                 company = company.with_context(
-                manual_rate=self.manual_currency_exchange_rate,
-                active_manutal_currency = self.apply_manual_currency_exchange,
-            )
+                    manual_rate=self.manual_currency_exchange_rate,
+                    active_manutal_currency=self.apply_manual_currency_exchange,
+                )
                 total += company.currency_id._convert(res['amount_residual'], currency, company, date)
         return total
-
 
     def _prepare_payment_moves(self):
         ''' Prepare the creation of journal entries (account.move) by creating a list of python dictionary to be passed
@@ -127,7 +129,8 @@ class AccountPayments(models.Model):
         all_move_vals = []
         for payment in self:
             company_currency = payment.company_id.currency_id
-            move_names = payment.move_name.split(payment._get_move_name_transfer_separator()) if payment.move_name else None
+            move_names = payment.move_name.split(
+                payment._get_move_name_transfer_separator()) if payment.move_name else None
 
             # Compute amounts.
             write_off_amount = payment.payment_difference_handling == 'reconcile' and -payment.payment_difference or 0.0
@@ -147,20 +150,24 @@ class AccountPayments(models.Model):
                 currency_id = False
             else:
                 # Multi-currencies.
-#                 payment = payment.with_context(
-#                 manual_rate=self.manual_currency_exchange_rate,
-#                 active_manutal_currency = self.apply_manual_currency_exchange,
-#             )
+                #                 payment = payment.with_context(
+                #                 manual_rate=self.manual_currency_exchange_rate,
+                #                 active_manutal_currency = self.apply_manual_currency_exchange,
+                #             )
                 if self.active_manual_currency_rate:
                     if self.apply_manual_currency_exchange:
                         balance = counterpart_amount / payment.manual_currency_exchange_rate
                         write_off_balance = write_off_amount / payment.manual_currency_exchange_rate
                     else:
-                        balance = payment.currency_id._convert(counterpart_amount, company_currency, payment.company_id, payment.payment_date)
-                        write_off_balance = payment.currency_id._convert(write_off_amount, company_currency, payment.company_id, payment.payment_date)
+                        balance = payment.currency_id._convert(counterpart_amount, company_currency, payment.company_id,
+                                                               payment.payment_date)
+                        write_off_balance = payment.currency_id._convert(write_off_amount, company_currency,
+                                                                         payment.company_id, payment.payment_date)
                 else:
-                    balance = payment.currency_id._convert(counterpart_amount, company_currency, payment.company_id, payment.payment_date)
-                    write_off_balance = payment.currency_id._convert(write_off_amount, company_currency, payment.company_id, payment.payment_date)
+                    balance = payment.currency_id._convert(counterpart_amount, company_currency, payment.company_id,
+                                                           payment.payment_date)
+                    write_off_balance = payment.currency_id._convert(write_off_amount, company_currency,
+                                                                     payment.company_id, payment.payment_date)
                 currency_id = payment.currency_id.id
 
             # Manage custom currency on journal for liquidity line.
@@ -255,7 +262,9 @@ class AccountPayments(models.Model):
                         if self.apply_manual_currency_exchange:
                             transfer_amount = counterpart_amount / payment.manual_currency_exchange_rate
                         else:
-                            transfer_amount = payment.currency_id._convert(counterpart_amount, payment.destination_journal_id.currency_id, payment.company_id, payment.payment_date)
+                            transfer_amount = payment.currency_id._convert(counterpart_amount,
+                                                                           payment.destination_journal_id.currency_id,
+                                                                           payment.company_id, payment.payment_date)
                 else:
                     transfer_amount = 0.0
 

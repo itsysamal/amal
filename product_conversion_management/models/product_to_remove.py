@@ -29,6 +29,11 @@ class ProductRemove(models.Model):
     quantity = fields.Float(string="Quantity", default=1.0)
     remaining_qty = fields.Float(string="Remaining quantity")
     availability = fields.Float(string="Available", store=True)
+    fixed_percentage = fields.Selection([('fixed', 'Fixed'),
+                                         ('percentage', 'Percentage')],
+                                        'Cost Type',
+                                        copy=False, tracking=True)
+    unit_price = fields.Float(string="Unit Price", compute='compute_unit_price')
 
     cost_price = fields.Float(string="Cost Price", compute='compute_inventory_valuation_cost_price')
     move_ids = fields.One2many('stock.move', 'product_remove_id', string='Stock Moves')
@@ -64,6 +69,14 @@ class ProductRemove(models.Model):
                 product.cost_price = (value / quantity) * product.quantity
             else:
                 product.cost_price = 0.0
+
+    @api.depends('product_id', 'cost_price', 'quantity')
+    def compute_unit_price(self):
+        for product in self:
+            if product.quantity:
+                product.unit_price = product.cost_price / product.quantity
+            else:
+                product.unit_price = 0.0
 
     @api.constrains('quantity')
     def quantity_percentage_not_minus(self):

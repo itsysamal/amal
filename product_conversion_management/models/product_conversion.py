@@ -36,7 +36,13 @@ class ProductConversion(models.Model):
                                          states={'draft': [('readonly', False)]})
     stock_picking_ids = fields.One2many('stock.picking', 'conversion_id', string="Picking", readonly=True,
                                         states={'draft': [('readonly', False)]})
+    product_expense_ids = fields.One2many('product.expense', 'conversion_id', string="Allocated Expenses",
+                                          readonly=True,
+                                          states={'draft': [('readonly', False)]})
 
+    move_ids = fields.One2many('account.move', 'conversion_id', string='Entries Lines', readonly=True,
+                               states={'draft': [('readonly', False)]})
+    entries_count = fields.Integer(compute='_entry_count', string='# Posted Entries')
     stock_picking_count = fields.Integer(compute='compute_stock_picking_count', string="#picking", copy=False)
     check_availability = fields.Boolean(copy=False)
     procurement_group_id = fields.Many2one('procurement.group', 'Procurement Group Of Remove Products', copy=False)
@@ -44,6 +50,24 @@ class ProductConversion(models.Model):
     company_id = fields.Many2one('res.company', 'Company', required=True, index=True,
                                  default=lambda self: self.env.company, readonly=True,
                                  states={'draft': [('readonly', False)], 'assigned': [('readonly', False)]})
+    journal_id = fields.Many2one('account.journal', string='Journal', domain=[('type', '=', 'general')], required=True)
+
+    @api.depends('move_ids')
+    def _entry_count(self):
+        for conversion in self:
+            res = self.env['account.move'].search_count([('conversion_id', '=', conversion.id)])
+            conversion.entries_count = res or 0
+
+    def open_entries(self):
+        return {
+            'name': _('Journal Entries'),
+            'view_mode': 'tree,form',
+            'res_model': 'account.move',
+            'views': [(self.env.ref('account.view_move_tree').id, 'tree'), (False, 'form')],
+            'type': 'ir.actions.act_window',
+            'domain': [('id', 'in', self.move_ids.ids)],
+            'context': dict(self._context, create=False),
+        }
 
     @api.model
     def _default_warehouse_id(self):
@@ -140,6 +164,34 @@ class ProductConversion(models.Model):
                 picking.message_post_with_view('mail.message_origin_link',
                                                values={'self': picking, 'origin': order},
                                                subtype_id=self.env.ref('mail.mt_note').id)
+            total_expense = 0.0
+            for expense in self.product_expense_ids:
+                total_expense += expense.cost_price
+                self.env['account.move'].create({
+                    'journal_id': self.journal_id.id,
+                    'ref': self.name,
+                    'conversion_id': self.id,
+                    'type': 'entry',
+                    'date': self.conversion_date,
+                    'line_ids': [
+                        (0, 0, {'partner_id': self.partner_shipping_id.id,
+                                'debit': expense.cost_price,
+                                'account_id': order.product_id.categ_id.property_stock_valuation_account_id.id,
+                                'conversion_id': self.id,
+                                'product_id': order.product_id.id,
+                                'analytic_account_id': order.analytic_account_id.id,
+                                'analytic_tag_ids': [(6, 0, order.analytic_tag_ids.ids)]
+                                }),
+                        (0, 0, {'partner_id': self.partner_shipping_id.id,
+                                'credit': expense.cost_price,
+                                'account_id': order.product_id.categ_id.property_account_expense_categ_id.id,
+                                'conversion_id': self.id,
+                                'product_id': order.product_id.id,
+                                'analytic_account_id': expense.analytic_account_id.id,
+                                'analytic_tag_ids': [(6, 0, expense.analytic_tag_ids.ids)]
+                                }),
+                    ],
+                }).post()
         """
         Launch procurement group run method with required/custom fields genrated by a
         Product To Remove. procurement group will launch '_run_pull', '_run_buy' or '_run_manufacture'
@@ -169,6 +221,7 @@ class ProductConversion(models.Model):
                 line.name, line.conversion_id.name, line.conversion_id.company_id, values))
         if procurements:
             self.env['procurement.group'].run(procurements)
+
         return True
 
     def action_cancel(self):

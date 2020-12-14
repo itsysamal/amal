@@ -29,8 +29,21 @@
                                 <field name="quantity"/>
                                 <field name="product_uom" options="{'no_create': True}"/>
                                 <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
-                                <field name="percentage"/>
-                                <field name="new_cost_price"/>
+                                <field name="fixed_percentage"/>
+                                <field name="percentage"
+                                       attrs="{'readonly': [('fixed_percentage', '!=', 'percentage')]}"
+                                       sum="Percentage"/>
+                                <field name="editable_unit_price"
+                                       attrs="{'invisible': [('fixed_percentage', '!=', 'fixed')]}"
+                                       sum="Fixed Unit Price"/>
+                                <field name="unit_price"
+                                       attrs="{'invisible': [('fixed_percentage', '!=', 'percentage')]}"
+                                       sum="Unit Price"/>
+                                <field name="cost_price" sum="Cost Price"/>
+                                <field name="allocate_expense" sum="Allocated Expences"/>
+                                <field name="remaining_cost" sum="Remaining Cos"/>
+                                <field name="new_cost_price_edit" sum="Final Cost"/>
+                                <field name="final_item_cost" sum="Final Item Cost"/>
                                 <field name="move_ids"/>
                                 <field name="move_dest_ids"/>
                             </group>
@@ -55,15 +68,23 @@
                     <field name="analytic_account_id" options="{'no_create': True}"/>
                     <field name="analytic_tag_ids" options="{'no_create': True}"/>
                     <field name="branch_id" options="{'no_create': True}"/>
-                    <field name="quantity"/>
+                    <field name="quantity" sum="Quantity"/>
                     <field name="product_uom" options="{'no_create': True}"/>
                     <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
                     <field name="fixed_percentage"/>
                     <field name="percentage"
-                           attrs="{'readonly': [('fixed_percentage', '!=', 'percentage')]}"/>
-                    <field name="new_cost_price_edit"
-                           attrs="{'readonly': [('fixed_percentage', '!=', 'fixed')]}"/>
-                    <field name="new_cost_price"/>
+                           attrs="{'readonly': [('fixed_percentage', '!=', 'percentage')]}" sum="Percentage"/>
+                    <field name="editable_unit_price"
+                           attrs="{'invisible': [('fixed_percentage', '!=', 'fixed')]}"
+                           sum="Fixed Unit Price"/>
+                    <field name="unit_price"
+                           attrs="{'invisible': [('fixed_percentage', '!=', 'percentage')]}"
+                           sum="Unit Price"/>
+                    <field name="cost_price" sum="Cost Price"/>
+                    <field name="allocate_expense" sum="Allocated Expences"/>
+                    <field name="remaining_cost" sum="Remaining Cos"/>
+                    <field name="new_cost_price_edit" sum="Final Cost"/>
+                    <field name="final_item_cost" sum="Final Item Cost"/>
                 </tree>
             </field>
         </record>

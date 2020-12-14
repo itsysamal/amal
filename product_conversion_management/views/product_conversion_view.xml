@@ -20,6 +20,11 @@
                                 <field name="stock_picking_count" string="Picking"
                                        widget="statinfo" class="o_stat_value"/>
                             </button>
+                            <button class="oe_stat_button" name="open_entries" type="object" icon="fa-bars"
+                                    context="{'create': False, 'import': False}">
+                                <field string="Posted Entries" name="entries_count" widget="statinfo"
+                                       class="o_stat_value"/>
+                            </button>
                         </div>
                         <div class="oe_title">
                             <h1>
@@ -33,6 +38,7 @@
                                        groups="stock.group_stock_multi_locations"/>
                                 <field name="partner_shipping_id" string="Partner"/>
                                 <field name="procurement_group_id_in" readonly="1" invisible="1"/>
+                                <field name="journal_id"/>
                             </group>
                             <group>
                                 <field name="procurement_group_id" readonly="1" invisible="1"/>
@@ -60,13 +66,14 @@
                                     <field name="analytic_account_id" options="{'no_create': True}"/>
                                     <field name="analytic_tag_ids" options="{'no_create': True}"/>
                                     <field name="branch_id" options="{'no_create': True}"/>
-                                    <field name="quantity"/>
-                                    <field name="availability" readonly="1" force_save="1"/>
-                                    <field name="remaining_qty" readonly="1" force_save="1" invisible="1"/>
-
+                                    <field name="quantity" sum="Quantity"/>
                                     <field name="product_uom" options="{'no_create': True}"/>
                                     <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
-                                    <field name="cost_price"/>
+                                    <!--<field name="fixed_percentage" invisible="1"/>-->
+                                    <field name="unit_price" sum="Unit Price"/>
+                                    <field name="availability" readonly="1" force_save="1" sum="Availability"/>
+                                    <field name="remaining_qty" readonly="1" force_save="1" invisible="1"/>
+                                    <field name="cost_price" sum="Cost Price"/>
                                 </tree>
                             </field>
                         </div>
@@ -86,21 +93,52 @@
                                     <field name="analytic_account_id" options="{'no_create': True}"/>
                                     <field name="analytic_tag_ids" options="{'no_create': True}"/>
                                     <field name="branch_id" options="{'no_create': True}"/>
-                                    <field name="quantity"/>
+                                    <field name="quantity" sum="Quantity"/>
                                     <field name="product_uom" options="{'no_create': True}"/>
                                     <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
                                     <field name="fixed_percentage"/>
+                                    <field name="editable_unit_price"
+                                           attrs="{'invisible': [('fixed_percentage', '!=', 'fixed')]}"
+                                           sum="Fixed Unit Price"/>
+                                    <field name="unit_price"
+                                           attrs="{'invisible': [('fixed_percentage', '!=', 'percentage')]}"
+                                           sum="Unit Price"/>
                                     <field name="percentage"
-                                           attrs="{'readonly': [('fixed_percentage', '!=', 'percentage')]}"/>
-                                    <field name="new_cost_price_edit"
-                                           attrs="{'readonly': [('fixed_percentage', '!=', 'fixed')]}"/>
-                                    <field name="new_cost_price"/>
+                                           attrs="{'readonly': [('fixed_percentage', '!=', 'percentage')]}"
+                                           sum="Percentage"/>
+                                    <field name="cost_price" sum="Cost Price"/>
+                                    <field name="allocate_expense" sum="Allocated Expences"/>
+                                    <field name="remaining_cost" sum="Remaining Cos"/>
+                                    <field name="new_cost_price_edit" sum="Final Cost"/>
+                                    <field name="final_item_cost" sum="Final Item Cost"/>
 
+                                </tree>
+                            </field>
+                        </div>
+                        <group string="Allocated Expenses"/>
+                        <div name="product_expense_ids" string="Allocated Expenses">
+                            <field name="product_expense_ids">
+                                <tree string="Allocated Expenses" editable="top">
+                                    <field name="name"/>
+                                    <field name="conversion_id" options="{'no_create': True}" readonly="True"/>
+                                    <field name="product_id" options="{'no_create': True}"/>
+                                    <field name="product_tmp_id" options="{'no_create': True}" invisible="1"/>
+                                    <field name="analytic_account_id" options="{'no_create': True}"/>
+                                    <field name="analytic_tag_ids" options="{'no_create': True}"/>
+                                    <field name="branch_id" options="{'no_create': True}"/>
+                                    <field name="quantity" sum="Quantity"/>
+                                    <field name="product_uom" options="{'no_create': True}"/>
+                                    <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
+                                    <field name="unit_price" sum="Unit Price"/>
+                                    <field name="cost_price" sum="Cost Price"/>
                                 </tree>
                             </field>
                         </div>
                         <div name="stock_picking">
                             <field name="stock_picking_ids" invisible="1"/>
+                        </div>
+                        <div name="move_ids">
+                            <field name="move_ids" invisible="1"/>
                         </div>
                     </sheet>
                     <div class="oe_chatter" name="contract_chatter">
@@ -168,6 +206,16 @@
                 action="product_conversion_action"
                 sequence="2"
         />
+        <record id="view_inherit_account_move_form_conversion" model="ir.ui.view">
+            <field name="name">view.inherit.account.move.form</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='ref']" position="after">
+                    <field name="conversion_id" options="{'no_create': True}"/>
+                </xpath>
+            </field>
+        </record>
 
     </data>
 </odoo>
