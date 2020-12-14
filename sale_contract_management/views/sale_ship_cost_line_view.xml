@@ -1,0 +1,87 @@
+<odoo>
+    <data>
+        <record id="sale_ship_cost_line_form_view" model="ir.ui.view">
+            <field name="name">sale.ship.cost.line.form.view</field>
+            <field name="model">sale.ship.cost.line</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet string="Sale Ship Cost Line">
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" required="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="sale_contract_id" invisible="1"/>
+                                <field name="sale_contract_line_id" readonly="1" domain="[('id', 'in',sale_contract_line_ids)]"/>
+                                <field name="sale_contract_line_ids" invisible="1"/>
+                                <field name="freight"/>
+                            </group>
+                            <group>
+                                <field name="thc"/>
+                                <field name="currency_id"
+                                       options="{'no_open': True, 'no_create': True, 'no_create_edit': True}"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="sale_ship_cost_line_tree_view" model="ir.ui.view">
+            <field name="name">sale.ship.cost.line.tree.view</field>
+            <field name="model">sale.ship.cost.line</field>
+            <field name="arch" type="xml">
+                <tree string="Sale Ship Cost Line">
+                    <field name="sale_contract_id" invisible="1"/>
+                    <field name="sale_contract_line_id"/>
+                    <field name="name" modifiers="{}" string="Description"/>
+                    <field name="freight" string="Freight"/>
+                    <field name="thc" string="THC"/>
+                    <field name="currency_id" options="{'no_open': True, 'no_create': True, 'no_create_edit': True}"/>
+                </tree>
+            </field>
+        </record>
+        <record id="sale_ship_cost_line_view_search" model="ir.ui.view">
+            <field name="name">sale.ship.cost.line.view.search</field>
+            <field name="model">sale.ship.cost.line</field>
+            <field name="arch" type="xml">
+                <search string="Sale Ship Cost Line">
+                    <field name="name"/>
+                    <field name="sale_contract_id"/>
+                    <field name="sale_contract_line_id"/>
+                    <field name="currency_id"/>
+                    <group expand="1" string="Group By...">
+                        <filter string="Sale Contract Line" domain="[]" name="sale_contract_line_id"
+                                context="{'group_by':'sale_contract_line_id'}"/>
+                        <filter string="Currency" domain="[]" name="currency_id"
+                                context="{'group_by':'currency_id'}"/>
+                        <filter string="Sale Contract" domain="[]" name="sale_contract_id"
+                                context="{'group_by':'sale_contract_id'}"/>
+                        <separator/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Actions and Menuitems -->
+        <record id="sale_ship_cost_line_action" model="ir.actions.act_window">
+            <field name="name">Sale Ship Cost Line</field>
+            <field name="res_model">sale.ship.cost.line</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create New Sale Ship Cost Line.
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="ship_cost_4_menu"
+                parent="sale_contract_management.sale_contract_menu"
+                name="Sale Ship Cost Line"
+                action="sale_ship_cost_line_action"
+                sequence="4"
+                groups="sale_contract_management.group_sale_ship_cost_lines_user,sale_contract_management.group_sale_ship_cost_lines_user_manager"/>
+    </data>
+</odoo>

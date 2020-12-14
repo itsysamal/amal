@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_inherit_sale_view_order_form_contract" model="ir.ui.view">
+            <field name="name">view.inherit.sale.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='currency_id']" position="after">
+                    <field name="sale_contract_id" options="{'no_create': True}"/>
+                    <field name="sale_contract_id_line" options="{'no_create': True}"/>
+                </xpath>
+                <button name="btn_advance_payment" position="attributes">
+                    <attribute name="context">{'default_sale_contract_id':sale_contract_id}</attribute>
+                </button>
+                <field name="order_line" position="attributes">
+                    <attribute name="attrs">{'readonly': [('state', 'in', ('sale','done', 'cancel'))]}
+                    </attribute>
+                </field>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='product_template_id']" position="after">
+                    <field name="sale_contract_id" invisible="1"/>
+                    <field name="sale_contract_id_line" invisible="1"/>
+                    <field name="account_payment_ids" widget="many2many_tags" invisible="1"/>
+                    <field name="account_payment_id" domain="[('id', 'in',account_payment_ids)]"
+                           options="{'no_create': True}"/>
+                    <field name="payment_to_link" sum="Payment To Link"/>
+                </xpath>
+
+                <xpath expr="//field[@name='order_line']/form/group/group[1]/field[@name='product_id']"
+                       position="after">
+                    <field name="sale_contract_id" invisible="1"/>
+                    <field name="sale_contract_id_line" invisible="1"/>
+                    <field name="account_payment_ids" widget="many2many_tags" invisible="1"/>
+                    <field name="account_payment_id" domain="[('id', 'in',account_payment_ids)]"
+                           options="{'no_create': True}"/>
+                    <field name="payment_to_link" sum="Payment To Link"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

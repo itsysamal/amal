@@ -1,0 +1,137 @@
+<odoo>
+    <data>
+        <record id="contract_operation_line_form_view" model="ir.ui.view">
+            <field name="name">contract.operation.line.form.view</field>
+            <field name="model">contract.operation.line</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet string="Contract Operation Lines">
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" required="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group name="personal_info">
+                                <field name="purchase_contract_line_id" readonly="1" domain="[('id', 'in',purchase_contract_line_ids)]"/>
+                                <field name="purchase_contract_line_ids" invisible="1"/>
+                                <field name="contract_id" invisible="1"/>
+                                <field name="loading_area" string="loading Area"/>
+                                <field name="inspection_name" string="Inspection Name"/>
+                                <field name="free_time" string="Free Time"
+                                       optional="hide"/>
+                                <field name="trans_time" string="Trans Time"/>
+                            </group>
+                            <group>
+                                <field name="clearance_agent_id" string="Clearance Agent Name"/>
+                                <field name="sending_bank_details_date" string="Sending Bank Details Date"/>
+                                <field name="courier_name" string="Courier Name"/>
+                                <field name="in_bank_office_date" string="In Bank /Office Date"/>
+                                <field name="out_bank_office_date" string="Out bank /Office Date"/>
+                                <field name="sent_to_clearance_date" string="Sent to Clearance Date "/>
+                                <field name="free_time_expiration_date" string="Free Time Expiration Date"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="contract_operation_line_tree_view" model="ir.ui.view">
+            <field name="name">contract.operation.line.tree.view</field>
+            <field name="model">contract.operation.line</field>
+            <field name="arch" type="xml">
+                <tree string="Contract Operations Lines">
+                    <field name="contract_id" invisible="1"/>
+                    <field name="purchase_contract_line_id"/>
+                    <field name="name" modifiers="{}"/>
+                    <field name="loading_area" string="loading Area"/>
+                    <field name="inspection_name" string="Inspection Name"/>
+                    <field name="free_time" string="Free Time" widget="float_time"
+                           optional="hide"/>
+                    <field name="trans_time" string="Trans Time"
+                           widget="float_time" optional="hide"/>
+                    <field name="clearance_agent_id"
+                           string="Clearance Agent Name"
+                           optional="hide"/>
+                    <field name="sending_bank_details_date"
+                           string="Sending Bank Details Date" optional="hide"/>
+                    <field name="courier_name" string="Courier Name"
+                           optional="hide"/>
+                    <field name="in_bank_office_date"
+                           string="In Bank /Office Date"
+                           optional="hide"/>
+                    <field name="out_bank_office_date"
+                           string="Out bank /Office Date"
+                           optional="hide"/>
+                    <field name="sent_to_clearance_date"
+                           string="Sent to Clearance Date "
+                           optional="hide"/>
+                    <field name="free_time_expiration_date"
+                           string="Free Time Expiration Date" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+        <record id="contract_operation_line_view_search" model="ir.ui.view">
+            <field name="name">contract.operation.line.view.search</field>
+            <field name="model">contract.operation.line</field>
+            <field name="arch" type="xml">
+                <search string="Contract Operation Lines">
+                    <field name="contract_id"/>
+                    <field name="name"/>
+                    <field name="purchase_contract_line_id"/>
+                    <field name="clearance_agent_id"/>
+                    <field name="sending_bank_details_date"/>
+                    <field name="in_bank_office_date"/>
+                    <field name="out_bank_office_date"/>
+                    <field name="sent_to_clearance_date"
+                           string="Sent to Clearance Date "
+                    />
+                    <field name="free_time_expiration_date"
+                           string="Free Time Expiration Date"/>
+
+                    <group expand="1" string="Group By...">
+                        <filter string="Contract" domain="[]" name="contract_id"
+                                context="{'group_by':'contract_id'}"/>
+                        <filter string="Shipping Lines" domain="[]" name="purchase_contract_line_id"
+                                context="{'group_by':'purchase_contract_line_id'}"/>
+
+                        <filter string="Clearance Agent Name" domain="[]" name="clearance_agent_id"
+                                context="{'group_by':'clearance_agent_id'}"/>
+                        <filter string="Sending Bank Details Date" domain="[]" name="sending_bank_details_date"
+                                context="{'group_by':'sending_bank_details_date'}"/>
+                        <filter string="In Bank Office Date" domain="[]" name="in_bank_office_date"
+                                context="{'group_by':'in_bank_office_date'}"/>
+                        <filter string="Out Bank Office Date" domain="[]" name="out_bank_office_date"
+                                context="{'group_by':'out_bank_office_date'}"/>
+                        <filter string="Sent To Clearance Date" domain="[]" name="sent_to_clearance_date"
+                                context="{'group_by':'sent_to_clearance_date'}"/>
+                        <filter string="Free Time Expiration Date" domain="[]" name="free_time_expiration_date"
+                                context="{'group_by':'free_time_expiration_date'}"/>
+
+                        <separator/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Actions and Menuitems -->
+        <record id="contract_operation_line_action" model="ir.actions.act_window">
+            <field name="name">Contract Operation Line</field>
+            <field name="res_model">contract.operation.line</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create New Contract Operation Lines.
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="contract_operation_line_3_menu"
+                parent="purchase_contract_management.purchase_contract_menu"
+                name="Contract Operation Lines"
+                action="contract_operation_line_action"
+                sequence="3"
+                groups="purchase_contract_management.group_contract_operation_line_user,purchase_contract_management.group_contract_operation_line_user_manager"/>
+    </data>
+</odoo>

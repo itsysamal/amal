@@ -27,11 +27,9 @@ class StockMove(models.Model):
             return res
 
         for num in range(0, 2):
-            if (
-                res[num][2]["account_id"]
-                != self.product_id.categ_id.property_stock_valuation_account_id.id
-            ):
-                res[num][2].update({"analytic_account_id": self.analytic_account_id.id})
+            res[num][2].update({"analytic_account_id": self.analytic_account_id.id})
+            # if (res[num][2]["account_id"] != self.product_id.categ_id.property_stock_valuation_account_id.id):
+            #     res[num][2].update({"analytic_account_id": self.analytic_account_id.id})
         return res
 
     @api.model

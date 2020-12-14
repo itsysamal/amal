@@ -27,7 +27,7 @@
          <xpath expr="//field[@name='order_line']/tree//field[@name='taxes_id']" position="after">
                 <field name="e_t_s_date" widget="date" optional="hide" readonly="1" />
               <field name="e_t_a_date" widget="date" optional="hide" readonly="1" />
-              <field name="Arrival_After_date" readonly="1" />
+              <field name="Arrival_After_date" readonly="1" optional="hide"  />
               <field name="broker_id" optional="hide" readonly="1" />
               <field name="agent_id" optional="hide" readonly="1" />
               <field name="commission" optional="hide" />

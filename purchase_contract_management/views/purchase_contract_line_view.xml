@@ -1,0 +1,154 @@
+<odoo>
+    <data>
+        <record id="purchase_contract_line_form_view" model="ir.ui.view">
+            <field name="name">purchase.contract.line.form.view</field>
+            <field name="model">purchase.contract.line</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="create_purchase_order"
+                                type="object" string="Create PO" class="oe_highlight"
+                                attrs="{'invisible': [('purchase_created', '=', True)]}"
+                                groups="purchase_contract_management.group_purchase_contract_line_user_manager"
+                        />
+                    </header>
+                    <sheet string="Purchase Contract Lines">
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" required="1" string="Shipping line"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="purchase_created" invisible="1"/>
+                                <field name="contract_id" invisible="1"/>
+                                <field name="purchase_id" invisible="1"/>
+                                <!--<field name="state" invisible="1"/>-->
+                                <field name="vendor_id" invisible="1"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="contract_date" invisible="1"/>
+                                <field name="product_id"/>
+                                <field name="picking_type_id" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="invoice_no" string="Invoice No."
+                                       attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="invoice_date" string="Invoice Date"
+                                       attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="customs_no" string="Customs No."
+                                       attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="customs_date" string="Customs Date"
+                                       attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="quantity" string="Quantity"
+                                       sum="Sum of Quantity" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                            </group>
+                            <group>
+                                <field name="arrival_date" string="Arrival date"
+                                       attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="bl_no" string="BL No."
+                                       attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="bl_date" string="BL DATE/ETS"
+                                       attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="vessel_date" string="Vessel Date"
+                                       attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="pol" string="POL" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="pod" string="POD" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="purchase_contract_line_tree_view" model="ir.ui.view">
+            <field name="name">purchase.contract.line.tree.view</field>
+            <field name="model">purchase.contract.line</field>
+            <field name="arch" type="xml">
+                <tree string="Purchase Contract Lines">
+                    <field name="contract_id" invisible="1"/>
+                    <field name="purchase_id" invisible="1"/>
+                    <field name="name" modifiers="{}" string="Shipping line"/>
+                    <field name="product_id"/>
+                    <field name="picking_type_id"/>
+                    <field name="invoice_no" string="Invoice No."/>
+                    <field name="invoice_date" string="Invoice Date"/>
+                    <field name="customs_no" string="Customs No." optional="hide"/>
+                    <field name="customs_date" string="Customs Date"
+                           optional="hide"/>
+                    <field name="quantity" string="Quantity"
+                           sum="Sum of Quantity"/>
+                    <field name="arrival_date" string="Arrival date" optional="hide"/>
+                    <field name="bl_no" string="BL No." optional="hide"/>
+                    <field name="bl_date" string="BL DATE/ETS" optional="hide"/>
+                    <field name="vessel_date" string="Vessel Date"
+                           optional="hide"/>
+                    <field name="pol" string="POL" optional="hide"/>
+                    <field name="pod" string="POD" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+        <record id="purchase_contract_line_view_search" model="ir.ui.view">
+            <field name="name">purchase.contract.line.view.search</field>
+            <field name="model">purchase.contract.line</field>
+            <field name="arch" type="xml">
+                <search string="Purchase Contract Lines">
+                    <field name="contract_id"/>
+                    <field name="purchase_id"/>
+                    <field name="name"/>
+                    <field name="product_id"/>
+                    <field name="invoice_date"/>
+                    <field name="customs_date"/>
+                    <field name="arrival_date"/>
+                    <field name="bl_date"/>
+                    <field name="vessel_date"/>
+                    <field name="pol"/>
+                    <field name="pod"/>
+
+                    <group expand="1" string="Group By...">
+                        <filter string="Contract" domain="[]" name="contract_id"
+                                context="{'group_by':'contract_id'}"/>
+                        <filter string="Product" domain="[]" name="product_id"
+                                context="{'group_by':'product_id'}"/>
+
+                        <filter string="Invoice Date" domain="[]" name="invoice_date"
+                                context="{'group_by':'invoice_date'}"/>
+                        <filter string="Custom Date" domain="[]" name="customs_date"
+                                context="{'group_by':'customs_date'}"/>
+                        <filter string="Arrival Date" domain="[]" name="arrival_date"
+                                context="{'group_by':'arrival_date'}"/>
+                        <filter string="BL DATE/ETS" domain="[]" name="bl_date"
+                                context="{'group_by':'bl_date'}"/>
+                        <filter string="Vessel Date" domain="[]" name="vessel_date"
+                                context="{'group_by':'vessel_date'}"/>
+                        <filter string="POL Date" domain="[]" name="pol"
+                                context="{'group_by':'pol'}"/>
+                        <filter string="POD Date" domain="[]" name="pod"
+                                context="{'group_by':'pod'}"/>
+                        <filter string="Purchase Order" domain="[]" name="purchase_id"
+                                context="{'group_by':'purchase_id'}"/>
+
+                        <separator/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Actions and Menuitems -->
+        <record id="purchase_contract_line_action" model="ir.actions.act_window">
+            <field name="name">Purchase Contract Lines</field>
+            <field name="res_model">purchase.contract.line</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create New Purchase Contract Lines.
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="purchase_contract_line_2_menu"
+                parent="purchase_contract_management.purchase_contract_menu"
+                name="Purchase Contract Lines"
+                action="purchase_contract_line_action"
+                sequence="2"
+                groups="purchase_contract_management.group_purchase_contract_line_user_1,purchase_contract_management.group_purchase_contract_line_user_manager"
+        />
+    </data>
+</odoo>

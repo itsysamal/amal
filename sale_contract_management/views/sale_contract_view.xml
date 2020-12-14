@@ -1,0 +1,339 @@
+<odoo>
+    <data>
+        <record id="sale_contract_form_view" model="ir.ui.view">
+            <field name="name">sale.contract.form.view</field>
+            <field name="model">sale.contract</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="btn_advance_payment" string="Advance Payment"
+                                type="object" class="btn-primary"
+                                attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
+                                groups="sale_contract_management.group_sale_contract_user_manager"/>
+                        <field name="state" options="{'clickable': '1', 'fold_field': 'fold'}" widget="statusbar"/>
+                    </header>
+                    <sheet string="sale Contract">
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" icon="fa-shopping-basket" type="object"
+                                    name="action_sale_order" context="{'create': False, 'import': False}">
+                                <field name="order_count" string="SO"
+                                       widget="statinfo" class="o_stat_value"/>
+                            </button>
+                            <button name="action_customer_payment" class="oe_stat_button" icon="fa-folder-open"
+                                    type="object" context="{'create': False, 'import': False}">
+                                <field name="account_payment_count" string="Advance Payment"
+                                       widget="statinfo"/>
+                            </button>
+                            <button name="action_account_move" class="oe_stat_button" icon="fa-diamond"
+                                    type="object" context="{'create': False, 'import': False}">
+                                <field name="account_move_count" string="Customer Invoices"
+                                       widget="statinfo"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" required="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group name="personal_info">
+                                <field name="import_permit" string="Import Permit"/>
+                                <field name="customer_id" string="Customer"
+                                       options="{'no_create': True, 'no_create_edit': True}"/>
+                                <field name="contract_date" string="Contract Date"/>
+                                <field name="shipping_date" string="Shipping Date"/>
+                                <field name="payment_term" string="Payment Terms"/>
+                                <field name="variety" string="Variety"/>
+                                <field name="containers_no" string="Containers No."/>
+                                <field name="packages_id"/>
+                                <field name="packing_type" string="Packing type"/>
+                            </group>
+                            <group>
+                                <field name="product_id"/>
+                                <field name="product_brand_origin" string="Origin"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group name="quantity_info" string="Quantity Info.">
+                                <field name="quantity" string="Quantity"/>
+                                <field name="ship_qty" string="Ship QTY"/>
+                                <field name="close_reconcile_qty" string="Close Reconcile QTY"/>
+                                <field name="ship_remaining_qty" string="Ship Remaining QTY"/>
+                                <field name="so_qty" string="SO QTY"/>
+                                <field name="so_remaining_qty" string="SO Remaining QTY"/>
+                            </group>
+                            <group name="amount_info" string="Amount Info.">
+                                <field name="unit_price" string="Unit Price"/>
+                                <field name="currency_id"
+                                       options="{'no_open': True, 'no_create': True, 'no_create_edit': True}"/>
+                                <field name="amount" string="Amount"/>
+                                <field name="total_advance_payment" string="Total Advance Payment"/>
+                                <field name="net_amount" string="Net Amount"/>
+                            </group>
+                        </group>
+                        <notebook name="contract_notebook">
+                            <page name="ship_details" string="Ship Details"
+                                  groups="sale_contract_management.group_sale_contract_line_user_1,sale_contract_management.group_sale_contract_line_user_manager">
+                                <group name="ship_line_group">
+                                    <field name="sale_contract_line_ids" widget="section_and_note_one2many">
+                                        <tree string="Ship Details" editable="top">
+                                            <field name="name" modifiers="{}" string="Shipping line"/>
+                                            <field name="product_id"/>
+                                            <field name="sale_contract_id" invisible="1"/>
+                                            <field name="picking_type_id" invisible="1"
+                                                   attrs="{'readonly': [('sale_created', '=', True)]}"/>
+                                            <field name="sale_created" invisible="1"/>
+                                            <field name="invoice_no" string="Invoice No."
+                                                   attrs="{'readonly': [('sale_created', '=', True)]}"/>
+                                            <field name="invoice_date" string="Invoice Date"
+                                                   attrs="{'readonly': [('sale_created', '=', True)]}"/>
+                                            <field name="quantity" string="Quantity"
+                                                   sum="Sum of Quantity"
+                                                   attrs="{'readonly': [('sale_created', '=', True)]}"/>
+                                            <field name="customs_no" string="Customs No." optional="hide"
+                                                   attrs="{'readonly': [('sale_created', '=', True)]}"/>
+                                            <field name="customs_date" string="Customs Date"
+                                                   optional="hide"
+                                                   attrs="{'readonly': [('sale_created', '=', True)]}"/>
+                                            <field name="arrival_date" string="Arrival date" optional="hide"
+                                                   attrs="{'readonly': [('sale_created', '=', True)]}"/>
+                                            <field name="bl_no" string="BL No." optional="hide"
+                                                   attrs="{'readonly': [('sale_created', '=', True)]}"/>
+                                            <field name="bl_date" string="BL DATE/ETS" optional="hide"
+                                                   attrs="{'readonly': [('sale_created', '=', True)]}"/>
+                                            <field name="vessel_date" string="Vessel Date"
+                                                   optional="hide"
+                                                   attrs="{'readonly': [('sale_created', '=', True)]}"/>
+                                            <field name="pol" string="POL" optional="hide"
+                                                   attrs="{'readonly': [('sale_created', '=', True)]}"/>
+                                            <field name="pod" string="POD" optional="hide"
+                                                   attrs="{'readonly': [('sale_created', '=', True)]}"/>
+                                            <field name="sale_id" readonly="1"
+                                                   attrs="{'invisible': [('sale_created', '=', False)]}"/>
+                                            <button name="create_sale_order"
+                                                    type="object" string="Create SO" class="oe_highlight"
+                                                    attrs="{'invisible': [('sale_created', '=', True)]}"
+                                                    groups="sale_contract_management.group_sale_contract_line_user_manager"/>
+
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
+                            <page name="contract_operation" string="Sale Contract Operation"
+                                  groups="sale_contract_management.group_sale_contract_operation_line_user,sale_contract_management.group_sale_contract_operation_line_user_manager">
+                                <group name="contract_operation_group">
+                                    <field name="sale_contract_operation_line_ids">
+                                        <tree string="Sale Contract Operation" editable="top">
+                                            <field name="sale_contract_id" invisible="1"/>
+                                            <field name="sale_contract_line_id"
+                                                   options="{'no_create': True, 'no_create_edit': True}"
+                                                   domain="[('id', 'in',sale_contract_line_ids)]"/>
+                                            <field name="sale_contract_line_ids" invisible="1"/>
+                                            <field name="name" modifiers="{}"/>
+                                            <field name="loading_area" string="Loading Area"/>
+                                            <field name="inspection_name" string="Inspection Name"/>
+                                            <field name="free_time" string="Free Time"
+                                                   optional="hide"/>
+                                            <field name="trans_time" string="Trans Time"
+                                                   optional="hide"/>
+                                            <field name="clearance_agent_id"
+                                                   string="Clearance Agent Name"
+                                                   optional="hide"/>
+                                            <field name="sending_bank_details_date"
+                                                   string="Sending Bank Details Date" optional="hide"/>
+                                            <field name="courier_name" string="Courier Name"
+                                                   optional="hide"/>
+                                            <field name="in_bank_office_date"
+                                                   string="In Bank /Office Date"
+                                                   optional="hide"/>
+                                            <field name="out_bank_office_date"
+                                                   string="Out bank /Office Date"
+                                                   optional="hide"/>
+                                            <field name="sent_to_clearance_date"
+                                                   string="Sent to Clearance Date "
+                                                   optional="hide"/>
+                                            <field name="free_time_expiration_date"
+                                                   string="Free Time Expiration Date" optional="hide"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
+                            <page name="ship_cost" string="Sale Ship Cost"
+                                  groups="sale_contract_management.group_sale_ship_cost_lines_user,sale_contract_management.group_sale_ship_cost_lines_user_manager">
+                                <group name="sale_ship_cost_line">
+                                    <field name="sale_ship_cost_line_ids">
+                                        <tree string="Sale Ship Cost Line" editable="top">
+                                            <field name="sale_contract_id" invisible="1"/>
+                                            <field name="sale_contract_line_id"
+                                                   options="{'no_create': True, 'no_create_edit': True}"
+                                                   domain="[('id', 'in',sale_contract_line_ids)]"/>
+                                            <field name="sale_contract_line_ids" invisible="1"/>
+                                            <field name="name" string="Description" required="1"/>
+                                            <field name="freight" string="Freight"/>
+                                            <field name="thc" string="THC"/>
+                                            <field name="currency_id"
+                                                   options="{'no_open': True, 'no_create': True, 'no_create_edit': True}"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
+                            <page name="contract_so_lines" string="SO Lines"
+                                  groups="sales_team.group_sale_manager,sales_team.group_sale_salesman_all_leads,sales_team.group_sale_salesman">
+                                <field name="sale_line_ids" string="SO" widget="section_and_note_one2many"
+                                       mode="tree,kanban"
+                                       readonly="True">
+                                    <tree string="Sale Order" multi_edit="1"
+                                          decoration-muted="state=='cancel'"
+                                          class="o_sale_order">
+                                        <field name="sale_contract_id"
+                                               options="{'no_create': True, 'no_create_edit': True}"/>
+                                        <field name="order_id"/>
+                                        <!--<field name="date_order"-->
+                                               <!--invisible="not context.get('quotation_only', False)"-->
+                                               <!--optional="show"/>-->
+                                        <field name="display_type" invisible="1"/>
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="state" ioptional="show"/>
+                                        <field name="product_type" invisible="1"/>
+                                        <field name="product_uom_category_id" invisible="1"/>
+                                        <field name="invoice_lines" invisible="1"/>
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="order_partner_id" string="Customer"/>
+                                        <field name="name"/>
+                                        <field name="product_id"/>
+                                        <field name="account_payment_ids" widget="many2many_tags" invisible="1"/>
+                                        <field name="account_payment_id" domain="[('id', 'in',account_payment_ids)]"
+                                               options="{'no_create': True}"/>
+                                        <field name="payment_to_link" sum="Payment To Link"/>
+                                        <field name="product_uom_qty" sum="Quantity"/>
+                                        <field name="product_uom" groups="uom.group_uom"/>
+                                        <field name="price_unit"
+                                               attrs="{'readonly': [('invoice_lines', '!=', [])]}"
+                                               sum="Unit Price"/>
+                                        <field name="price_subtotal" widget="monetary" sum="Subtotal"
+                                               string="Untaxed" optional="hide"/>
+                                        <field name="price_total" widget="monetary" sum="Total Amount"
+                                               optional="hide"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page name="advance_payment" string="Advance Payments"
+                                  groups="account.group_account_invoice">
+                                <group name="advance_payment_group" string="Advance Payment">
+                                    <field name="account_payment_ids" nolabel="1" colspan="4"
+                                           context="{'form_view_ref': 'account.view_account_payment_form','tree_view_ref': 'account.view_account_customer_payment_tree'}"
+                                           string="Payments" readonly="True"/>
+                                </group>
+                            </page>
+                            <page name="customer_invoices" string="Customer Invoices" groups="account.group_account_invoice">
+                                <group name="customer_invoice_group">
+                                    <field name="account_move_ids" string="Customer Invoices" readonly="True"
+                                           context="{'default_type': 'in_invoice'}"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter" name="contract_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        <record id="sale_contract_tree_view" model="ir.ui.view">
+            <field name="name">sale.contract.tree.view</field>
+            <field name="model">sale.contract</field>
+            <field name="arch" type="xml">
+                <tree string="sale Contract">
+                    <field name="name"/>
+                    <field name="import_permit" string="Import Permit"/>
+                    <field name="customer_id" string="Customer"/>
+                    <field name="contract_date" string="Contract Date"/>
+                    <field name="shipping_date" string="Shipping Date"/>
+                    <field name="payment_term" string="Payment Terms"/>
+                    <field name="product_id"/>
+                    <field name="product_brand_origin" string="Origin"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="sale_contract_view_search" model="ir.ui.view">
+            <field name="name">sale.contract.view.search</field>
+            <field name="model">sale.contract</field>
+            <field name="arch" type="xml">
+                <search string="sale Contract">
+                    <field name="state"/>
+                    <field name="name"/>
+                    <field name="import_permit" string="Import Permit"/>
+                    <field name="customer_id" string="Customer"/>
+                    <field name="contract_date" string="Contract Date"/>
+                    <field name="shipping_date" string="Shipping Date"/>
+                    <field name="payment_term" string="Payment Terms"/>
+                    <field name="variety" string="Variety"/>
+                    <field name="containers_no" string="Containers No."/>
+                    <field name="packages_id"/>
+                    <field name="packing_type" string="Packing type"/>
+                    <field name="product_id"/>
+                    <field name="product_brand_origin" string="Origin"/>
+                    <group expand="1" string="Group By...">
+                        <filter string="State" domain="[]" name="state"
+                                context="{'group_by':'state'}"/>
+                        <filter string="Import Permit" name="import_permit"
+                                domain="[]" context="{'group_by':'import_permit'}"/>
+                        <filter string="Customer" domain="[]" name="customer_id"
+                                context="{'group_by':'customer_id'}"/>
+                        <filter string="Contract Date" domain="[]" name="contract_date"
+                                context="{'group_by':'contract_date'}"/>
+                        <filter string="Shipping Date" domain="[]" name="shipping_date"
+                                context="{'group_by':'shipping_date'}"/>
+                        <filter string="Payment Terms" domain="[]" name="payment_term"
+                                context="{'group_by':'payment_term'}"/>
+                        <filter string="Variety" domain="[]" name="variety"
+                                context="{'group_by':'variety'}"/>
+                        <filter string="Containers No" domain="[]" name="containers_no"
+                                context="{'group_by':'containers_no'}"/>
+                        <filter string="Packages" domain="[]" name="packages_id"
+                                context="{'group_by':'packages_id'}"/>
+                        <filter string="Packing Type" domain="[]" name="packing_type"
+                                context="{'group_by':'packing_type'}"/>
+                        <filter string="Product" domain="[]" name="product_id"
+                                context="{'group_by':'product_id'}"/>
+                        <filter string="Origin" domain="[]" name="product_brand_origin"
+                                context="{'group_by':'product_brand_origin'}"/>
+                        <separator/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Actions and Menuitems -->
+        <record id="sale_contract_action" model="ir.actions.act_window">
+            <field name="name">Sale Contract</field>
+            <field name="res_model">sale.contract</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create New Sale Contract.
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="sale_contract_menu"
+                parent="sale.sale_menu_root"
+                name="Sale Contract"
+                sequence="1"
+                groups="sale_contract_management.group_sale_contract_user,sale_contract_management.group_sale_contract_user_manager,sale_contract_management.group_sale_contract_line_user_1,sale_contract_management.group_sale_contract_line_user_manager,sale_contract_management.group_sale_contract_operation_line_user,sale_contract_management.group_sale_contract_operation_line_user_manager,sale_contract_management.group_sale_ship_cost_lines_user,sale_contract_management.group_sale_ship_cost_lines_user_manager"
+        />
+        <menuitem
+                id="sale_contract_1_menu"
+                parent="sale_contract_menu"
+                name="Sale Contract"
+                action="sale_contract_action"
+                sequence="1"
+                groups="sale_contract_management.group_sale_contract_user,sale_contract_management.group_sale_contract_user_manager"/>
+
+
+    </data>
+</odoo>
