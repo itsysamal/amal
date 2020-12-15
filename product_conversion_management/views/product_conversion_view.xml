@@ -1,0 +1,221 @@
+<odoo>
+    <data>
+        <record id="product_conversion_form_view" model="ir.ui.view">
+            <field name="name">product.conversion.form.view</field>
+            <field name="model">product.conversion</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button string="Check Availability" name="check_quants_availability" states="draft"
+                                type="object" class="oe_highlight"/>
+                        <button string="Confirm" name="action_confirm" states="assigned" type="object"
+                                class="oe_highlight"/>
+                        <button string="Cancel" name="action_cancel" states="draft" type="object" class="oe_highlight"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,assigned,done"/>
+                    </header>
+                    <sheet string="Product Conversion">
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" icon="fa-shopping-basket" type="object"
+                                    name="action_stock_picking" context="{'create': False, 'import': False}">
+                                <field name="stock_picking_count" string="Picking"
+                                       widget="statinfo" class="o_stat_value"/>
+                            </button>
+                            <button class="oe_stat_button" name="open_entries" type="object" icon="fa-bars"
+                                    context="{'create': False, 'import': False}">
+                                <field string="Posted Entries" name="entries_count" widget="statinfo"
+                                       class="o_stat_value"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" required="1"/>
+                            </h1>
+                        </div>
+                        <group name="Information">
+                            <group>
+                                <field name="conversion_date" string="Date &amp; Time"/>
+                                <field name="picking_type_id" options="{'no_create': True}"
+                                       groups="stock.group_stock_multi_locations"/>
+                                <field name="partner_shipping_id" string="Partner"/>
+                                <field name="procurement_group_id_in" readonly="1" invisible="1"/>
+                                <field name="journal_id"/>
+                            </group>
+                            <group>
+                                <field name="procurement_group_id" readonly="1" invisible="1"/>
+                                <field name="company_id" groups="base.group_multi_company"
+                                       options="{'no_create': True}"/>
+                                <field name="warehouse_id" options="{'no_create': True}"
+                                       groups="stock.group_stock_multi_warehouses" force_save="1"/>
+                            </group>
+                        </group>
+                        <group string="Remove"/>
+                        <div name="product_remove" string="Remove">
+                            <field name="check_availability" readonly="1" invisible="1"/>
+                            <field name="product_to_remove_ids" string="Remove">
+                                <tree string="Product To Remove" editable="top">
+                                    <field name="name"/>
+                                    <field name="conversion_id" options="{'no_create': True}" readonly="True"/>
+                                    <field name="product_id" options="{'no_create': True}"/>
+                                    <field name="product_tmp_id" options="{'no_create': True}" invisible="1"/>
+                                    <field name="location_id" options="{'no_create': True}"/>
+                                    <field name="route_id" options="{'no_create': True}" invisible="1"/>
+                                    <field name="move_ids" options="{'no_create': True}" invisible="1"/>
+                                    <field name="lot_id" options="{'no_create': True}"
+                                           domain="[('product_id','=', product_id)]"
+                                           context="{'default_product_id': product_id}"/>
+                                    <field name="analytic_account_id" options="{'no_create': True}"/>
+                                    <field name="analytic_tag_ids" options="{'no_create': True}"/>
+                                    <field name="branch_id" options="{'no_create': True}"/>
+                                    <field name="quantity" sum="Quantity"/>
+                                    <field name="product_uom" options="{'no_create': True}"/>
+                                    <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
+                                    <!--<field name="fixed_percentage" invisible="1"/>-->
+                                    <field name="unit_price" sum="Unit Price"/>
+                                    <field name="availability" readonly="1" force_save="1" sum="Availability"/>
+                                    <field name="remaining_qty" readonly="1" force_save="1" invisible="1"/>
+                                    <field name="cost_price" sum="Cost Price"/>
+                                </tree>
+                            </field>
+                        </div>
+                        <group string="Add"/>
+                        <div name="product_add" string="Add">
+                            <field name="product_to_add_ids">
+                                <tree string="Product To Add" editable="top">
+                                    <field name="name"/>
+                                    <field name="conversion_id" options="{'no_create': True}" readonly="True"/>
+                                    <field name="product_id" options="{'no_create': True}"/>
+                                    <field name="product_tmp_id" options="{'no_create': True}" invisible="1"/>
+                                    <field name="date_planned"/>
+                                    <field name="location_id" options="{'no_create': True}"/>
+                                    <field name="lot_id" options="{'no_create': True}"
+                                           domain="[('product_id','=', product_id)]"
+                                           context="{'default_product_id': product_id}"/>
+                                    <field name="analytic_account_id" options="{'no_create': True}"/>
+                                    <field name="analytic_tag_ids" options="{'no_create': True}"/>
+                                    <field name="branch_id" options="{'no_create': True}"/>
+                                    <field name="quantity" sum="Quantity"/>
+                                    <field name="product_uom" options="{'no_create': True}"/>
+                                    <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
+                                    <field name="fixed_percentage"/>
+                                    <field name="editable_unit_price"
+                                           attrs="{'invisible': [('fixed_percentage', '!=', 'fixed')]}"
+                                           sum="Fixed Unit Price"/>
+                                    <field name="unit_price"
+                                           attrs="{'invisible': [('fixed_percentage', '!=', 'percentage')]}"
+                                           sum="Unit Price"/>
+                                    <field name="percentage"
+                                           attrs="{'readonly': [('fixed_percentage', '!=', 'percentage')]}"
+                                           sum="Percentage"/>
+                                    <field name="cost_price" sum="Cost Price"/>
+                                    <field name="allocate_expense" sum="Allocated Expences"/>
+                                    <field name="remaining_cost" sum="Remaining Cos"/>
+                                    <field name="new_cost_price_edit" sum="Final Cost"/>
+                                    <field name="final_item_cost" sum="Final Item Cost"/>
+
+                                </tree>
+                            </field>
+                        </div>
+                        <group string="Allocated Expenses"/>
+                        <div name="product_expense_ids" string="Allocated Expenses">
+                            <field name="product_expense_ids">
+                                <tree string="Allocated Expenses" editable="top">
+                                    <field name="name"/>
+                                    <field name="conversion_id" options="{'no_create': True}" readonly="True"/>
+                                    <field name="product_id" options="{'no_create': True}"/>
+                                    <field name="product_tmp_id" options="{'no_create': True}" invisible="1"/>
+                                    <field name="analytic_account_id" options="{'no_create': True}"/>
+                                    <field name="analytic_tag_ids" options="{'no_create': True}"/>
+                                    <field name="branch_id" options="{'no_create': True}"/>
+                                    <field name="quantity" sum="Quantity"/>
+                                    <field name="product_uom" options="{'no_create': True}"/>
+                                    <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
+                                    <field name="unit_price" sum="Unit Price"/>
+                                    <field name="cost_price" sum="Cost Price"/>
+                                </tree>
+                            </field>
+                        </div>
+                        <div name="stock_picking">
+                            <field name="stock_picking_ids" invisible="1"/>
+                        </div>
+                        <div name="move_ids">
+                            <field name="move_ids" invisible="1"/>
+                        </div>
+                    </sheet>
+                    <div class="oe_chatter" name="contract_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        <record id="product_conversion_tree_view" model="ir.ui.view">
+            <field name="name">product.conversion.tree.view</field>
+            <field name="model">product.conversion</field>
+            <field name="arch" type="xml">
+                <tree string="Product Conversion">
+                    <field name="name"/>
+                    <field name="conversion_date" string="Date &amp; Time"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="product_conversion_view_search" model="ir.ui.view">
+            <field name="name">product.conversion.view.search</field>
+            <field name="model">product.conversion</field>
+            <field name="arch" type="xml">
+                <search string="Product Conversion">
+                    <field name="state"/>
+                    <field name="name"/>
+                    <field name="conversion_date" string="Contract Date"/>
+                    <group expand="1" string="Group By...">
+                        <filter string="State" domain="[]" name="state"
+                                context="{'group_by':'state'}"/>
+                        <filter string="Name" domain="[]" name="name"
+                                context="{'group_by':'name'}"/>
+                        <filter string="Date &amp; Time" domain="[]" name="conversion_date"
+                                context="{'group_by':'conversion_date'}"/>
+                        <separator/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Actions and Menuitems -->
+        <record id="product_conversion_action" model="ir.actions.act_window">
+            <field name="name">Product Conversion</field>
+            <field name="res_model">product.conversion</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create New Product Conversion.
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="product_conversion_parent_menu"
+                name="Product Conversion"
+                sequence="10"
+                web_icon="product_conversion_management,static/description/icon.jpg"
+        />
+        <menuitem
+                id="product_conversion_menu"
+                parent="product_conversion_parent_menu"
+                name="Product Conversion"
+                action="product_conversion_action"
+                sequence="2"
+        />
+        <record id="view_inherit_account_move_form_conversion" model="ir.ui.view">
+            <field name="name">view.inherit.account.move.form</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='ref']" position="after">
+                    <field name="conversion_id" options="{'no_create': True}"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
