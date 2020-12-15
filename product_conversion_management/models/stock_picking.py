@@ -22,3 +22,4 @@ class ProcurementGroup(models.Model):
     _inherit = 'procurement.group'
 
     conversion_id = fields.Many2one('product.conversion', string="Product Conversion", readonly=True)
+    product_remove_id = fields.Many2one('product.remove', string="Product To Remove", readonly=True)

@@ -85,13 +85,14 @@ class ProductRemove(models.Model):
                 raise ValidationError('Please enter a positive number in Quantity')
 
     def _get_procurement_group(self):
-        return self.conversion_id.procurement_group_id
+        return self.conversion_id.procurement_group_ids
 
     def _prepare_procurement_group_vals(self):
         return {
             'name': self.conversion_id.name,
             'move_type': 'direct',
             'conversion_id': self.conversion_id.id,
+            'product_remove_id': self.id,
             'partner_id': self.conversion_id.partner_shipping_id.id,
         }
 
