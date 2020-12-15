@@ -173,7 +173,7 @@ class ProductAdd(models.Model):
             'partner_id': self.conversion_id.partner_shipping_id.id,
             'user_id': False,
             'date': self.conversion_id.conversion_date,
-            'origin': self.name,
+            'origin': self.conversion_id.name,
             'location_dest_id': self.location_id.id,
             'location_id': self.conversion_id.partner_shipping_id.property_stock_supplier.id,
             'company_id': self.conversion_id.company_id.id,
