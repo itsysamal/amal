@@ -46,11 +46,14 @@ class ProductConversion(models.Model):
     stock_picking_count = fields.Integer(compute='compute_stock_picking_count', string="#picking", copy=False)
     check_availability = fields.Boolean(copy=False)
     procurement_group_id = fields.Many2one('procurement.group', 'Procurement Group Of Remove Products', copy=False)
+    procurement_group_ids = fields.Many2many('procurement.group', copy=False)
     procurement_group_id_in = fields.Many2one('procurement.group', 'Procurement Group Of Add Products', copy=False)
     company_id = fields.Many2one('res.company', 'Company', required=True, index=True,
                                  default=lambda self: self.env.company, readonly=True,
                                  states={'draft': [('readonly', False)], 'assigned': [('readonly', False)]})
-    journal_id = fields.Many2one('account.journal', string='Journal', domain=[('type', '=', 'general')], required=True)
+    journal_id = fields.Many2one('account.journal', string='Journal', domain=[('type', '=', 'general')], required=True,
+                                 readonly=True,
+                                 states={'draft': [('readonly', False)]})
 
     @api.depends('move_ids')
     def _entry_count(self):
@@ -148,7 +151,8 @@ class ProductConversion(models.Model):
         stock_picking = self.env['stock.picking']
         for order in self.product_to_add_ids:
             if any([ptype in ['product', 'consu'] for ptype in order.mapped('product_id.type')]):
-                pickings = self.stock_picking_ids.filtered(lambda x: x.state not in ('done', 'cancel'))
+                pickings = self.stock_picking_ids.filtered(
+                    lambda x: x.state not in ('done', 'cancel') and x.location_dest_id == order.location_id)
                 if not pickings:
                     res = order._prepare_picking()
                     picking = stock_picking.create(res)
@@ -175,7 +179,7 @@ class ProductConversion(models.Model):
                     'date': self.conversion_date,
                     'line_ids': [
                         (0, 0, {'partner_id': self.partner_shipping_id.id,
-                                'debit': expense.cost_price,
+                                'debit': order.allocate_expense,
                                 'account_id': order.product_id.categ_id.property_stock_valuation_account_id.id,
                                 'conversion_id': self.id,
                                 'product_id': order.product_id.id,
@@ -183,7 +187,7 @@ class ProductConversion(models.Model):
                                 'analytic_tag_ids': [(6, 0, order.analytic_tag_ids.ids)]
                                 }),
                         (0, 0, {'partner_id': self.partner_shipping_id.id,
-                                'credit': expense.cost_price,
+                                'credit': order.allocate_expense,
                                 'account_id': order.product_id.categ_id.property_account_expense_categ_id.id,
                                 'conversion_id': self.id,
                                 'product_id': order.product_id.id,
@@ -205,10 +209,22 @@ class ProductConversion(models.Model):
             qty = line._get_qty_procurement(previous_product_uom_qty)
             if float_compare(qty, line.quantity, precision_digits=precision) >= 0:
                 continue
-            group_id = line._get_procurement_group()
-            if not group_id:
+            group_ids = line._get_procurement_group()
+            locations = []
+            if not group_ids:
                 group_id = self.env['procurement.group'].create(line._prepare_procurement_group_vals())
-                line.conversion_id.procurement_group_id = group_id
+                line.conversion_id.procurement_group_ids = [(4, group_id.id)]
+            elif group_ids:
+                for group in group_ids:
+                    if group.product_remove_id != None:
+                        locations.append(group.product_remove_id.location_id)
+                if line.location_id not in locations:
+                    group_id = self.env['procurement.group'].create(line._prepare_procurement_group_vals())
+                    line.conversion_id.procurement_group_ids = [(4, group_id.id)]
+                else:
+                    for group in group_ids:
+                        if group.product_remove_id != None and line.location_id == group.product_remove_id.location_id:
+                            group_id = group
             values = line._prepare_procurement_values(group_id=group_id)
             product_qty = line.quantity - qty
 
@@ -221,7 +237,6 @@ class ProductConversion(models.Model):
                 line.name, line.conversion_id.name, line.conversion_id.company_id, values))
         if procurements:
             self.env['procurement.group'].run(procurements)
-
         return True
 
     def action_cancel(self):
@@ -238,7 +253,9 @@ class ProductConversionInh(models.Model):
                 for line in self.product_to_remove_ids:
                     if move.conversion_id == line.conversion_id and not move.product_add_id \
                             and move.product_id == line.product_id:
-                        move.write({"analytic_account_id": line.analytic_account_id.id,
+                        move.picking_id.location_id = line.location_id.id
+                        move.write({"location_id": line.location_id.id,
+                                    "analytic_account_id": line.analytic_account_id.id,
                                     "analytic_tag_ids": [(6, 0, line.analytic_tag_ids.ids)]})
                 for order in self.product_to_add_ids:
                     if move.conversion_id == order.conversion_id and move.product_add_id == order.id:
