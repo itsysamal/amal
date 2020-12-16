@@ -46,12 +46,14 @@ class ProductConversion(models.Model):
     stock_picking_count = fields.Integer(compute='compute_stock_picking_count', string="#picking", copy=False)
     check_availability = fields.Boolean(copy=False)
     procurement_group_id = fields.Many2one('procurement.group', 'Procurement Group Of Remove Products', copy=False)
-    procurement_group_ids = fields.Many2many('procurement.group')
+    procurement_group_ids = fields.Many2many('procurement.group', copy=False)
     procurement_group_id_in = fields.Many2one('procurement.group', 'Procurement Group Of Add Products', copy=False)
     company_id = fields.Many2one('res.company', 'Company', required=True, index=True,
                                  default=lambda self: self.env.company, readonly=True,
                                  states={'draft': [('readonly', False)], 'assigned': [('readonly', False)]})
-    journal_id = fields.Many2one('account.journal', string='Journal', domain=[('type', '=', 'general')], required=True)
+    journal_id = fields.Many2one('account.journal', string='Journal', domain=[('type', '=', 'general')], required=True,
+                                 readonly=True,
+                                 states={'draft': [('readonly', False)]})
 
     @api.depends('move_ids')
     def _entry_count(self):
