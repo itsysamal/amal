@@ -62,7 +62,7 @@ class ProductAdd(models.Model):
     @api.depends('cost_price', 'allocate_expense')
     def compute_final_cost(self):
         for product in self:
-            if product.allocate_expense and product.cost_price:
+            if product.allocate_expense or product.cost_price:
                 product.new_cost_price_edit = product.cost_price + product.allocate_expense
             else:
                 product.new_cost_price_edit = 0.0
@@ -82,7 +82,7 @@ class ProductAdd(models.Model):
             total_cost_of_remove = 0.0
             for remove in product.conversion_id.product_to_remove_ids:
                 total_cost_of_remove += remove.cost_price
-            if total_cost_of_remove and product.quantity and product.percentage and product.fixed_percentage == 'percentage':
+            if product.quantity and product.fixed_percentage == 'percentage':
                 product.unit_price = (total_cost_of_remove * (product.percentage/100)) / product.quantity
             else:
                 product.unit_price = 0.0
@@ -94,7 +94,7 @@ class ProductAdd(models.Model):
             total_cost_of_remove = 0.0
             for remove in product.conversion_id.product_to_remove_ids:
                 total_cost_of_remove += remove.cost_price
-            if total_cost_of_remove and product.cost_price:
+            if total_cost_of_remove or product.cost_price:
                 product.remaining_cost = product.cost_price - (total_cost_of_remove/2)
             else:
                 product.remaining_cost = 0.0
