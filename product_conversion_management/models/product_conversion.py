@@ -179,7 +179,7 @@ class ProductConversion(models.Model):
                     'date': self.conversion_date,
                     'line_ids': [
                         (0, 0, {'partner_id': self.partner_shipping_id.id,
-                                'debit': expense.cost_price,
+                                'debit': order.allocate_expense,
                                 'account_id': order.product_id.categ_id.property_stock_valuation_account_id.id,
                                 'conversion_id': self.id,
                                 'product_id': order.product_id.id,
@@ -187,7 +187,7 @@ class ProductConversion(models.Model):
                                 'analytic_tag_ids': [(6, 0, order.analytic_tag_ids.ids)]
                                 }),
                         (0, 0, {'partner_id': self.partner_shipping_id.id,
-                                'credit': expense.cost_price,
+                                'credit': order.allocate_expense,
                                 'account_id': order.product_id.categ_id.property_account_expense_categ_id.id,
                                 'conversion_id': self.id,
                                 'product_id': order.product_id.id,
