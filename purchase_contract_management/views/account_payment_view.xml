@@ -99,5 +99,20 @@
                 </xpath>
             </field>
         </record>
+        <record id="purchase_contract_management_view_inherit_contract" model="ir.ui.view">
+            <field name="name">view.inherit.account.payment.form</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="purchase_contract_management.view_inherit_account_payment_form_contract"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='contract_id']" position="attributes">
+                    <attribute name="attrs">{'invisible':[('sale_check_contract_payment', '=',True)]}
+                    </attribute>
+                </xpath>
+                <xpath expr="//field[@name='purchase_id']" position="attributes">
+                    <attribute name="attrs">{'invisible':[('sale_check_contract_payment', '=',True)],'readonly': [('state', '!=', 'draft')]}
+                    </attribute>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

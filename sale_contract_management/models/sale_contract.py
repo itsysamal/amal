@@ -46,7 +46,7 @@ class SaleContract(models.Model):
                                     tracking=True)
 
     unit_price = fields.Float(string="Unit Price", required=True, default=1.0, tracking=True)
-    currency_id = fields.Many2one('res.currency', string="Currency", required=True, tracking=True)
+    currency_id = fields.Many2one('res.currency', string="Currency", required=True, tracking=True,default=lambda self: self.env.company.currency_id)
     amount = fields.Monetary('Amount', compute='_compute_amount', store=True, tracking=True)
     total_advance_payment = fields.Monetary('Total Advance Payment', compute='_compute_total_advance_payment',
                                             store=True, tracking=True)

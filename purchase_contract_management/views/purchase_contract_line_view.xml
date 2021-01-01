@@ -27,6 +27,7 @@
                                 <field name="vendor_id" invisible="1"/>
                                 <field name="currency_id" invisible="1"/>
                                 <field name="contract_date" invisible="1"/>
+                                <field name="sale_contract_line_ids" widget="many2many_tags" readonly="1"/>
                                 <field name="product_id"/>
                                 <field name="picking_type_id" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
                                 <field name="invoice_no" string="Invoice No."
@@ -49,6 +50,8 @@
                                        attrs="{'readonly': [('purchase_created', '=', True)]}"/>
                                 <field name="vessel_date" string="Vessel Date"
                                        attrs="{'readonly': [('purchase_created', '=', True)]}"/>
+                                <field name="vessel_name" string="Vessel Name"
+                                       attrs="{'readonly': [('purchase_created', '=', True)]}"/>
                                 <field name="pol" string="POL" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
                                 <field name="pod" string="POD" attrs="{'readonly': [('purchase_created', '=', True)]}"/>
                             </group>
@@ -65,6 +68,7 @@
                     <field name="contract_id" invisible="1"/>
                     <field name="purchase_id" invisible="1"/>
                     <field name="name" modifiers="{}" string="Shipping line"/>
+                    <field name="sale_contract_line_ids" widget="many2many_tags" readonly="1"/>
                     <field name="product_id"/>
                     <field name="picking_type_id"/>
                     <field name="invoice_no" string="Invoice No."/>
@@ -77,8 +81,8 @@
                     <field name="arrival_date" string="Arrival date" optional="hide"/>
                     <field name="bl_no" string="BL No." optional="hide"/>
                     <field name="bl_date" string="BL DATE/ETS" optional="hide"/>
-                    <field name="vessel_date" string="Vessel Date"
-                           optional="hide"/>
+                    <field name="vessel_date" string="Vessel Date" optional="hide"/>
+                    <field name="vessel_name" string="Vessel Name" optional="hide"/>
                     <field name="pol" string="POL" optional="hide"/>
                     <field name="pod" string="POD" optional="hide"/>
                 </tree>
@@ -98,12 +102,15 @@
                     <field name="arrival_date"/>
                     <field name="bl_date"/>
                     <field name="vessel_date"/>
+                    <field name="vessel_name"/>
                     <field name="pol"/>
                     <field name="pod"/>
 
                     <group expand="1" string="Group By...">
                         <filter string="Contract" domain="[]" name="contract_id"
                                 context="{'group_by':'contract_id'}"/>
+                        <filter string="Sale Contract Line" domain="[]" name="sale_contract_line_id"
+                                context="{'group_by':'sale_contract_line_id'}"/>
                         <filter string="Product" domain="[]" name="product_id"
                                 context="{'group_by':'product_id'}"/>
 
@@ -117,6 +124,8 @@
                                 context="{'group_by':'bl_date'}"/>
                         <filter string="Vessel Date" domain="[]" name="vessel_date"
                                 context="{'group_by':'vessel_date'}"/>
+                        <filter string="Vessel Name" domain="[]" name="vessel_name"
+                                context="{'group_by':'vessel_name'}"/>
                         <filter string="POL Date" domain="[]" name="pol"
                                 context="{'group_by':'pol'}"/>
                         <filter string="POD Date" domain="[]" name="pod"
@@ -145,7 +154,7 @@
         <menuitem
                 id="purchase_contract_line_2_menu"
                 parent="purchase_contract_management.purchase_contract_menu"
-                name="Purchase Contract Lines"
+                name="Ship Lines"
                 action="purchase_contract_line_action"
                 sequence="2"
                 groups="purchase_contract_management.group_purchase_contract_line_user_1,purchase_contract_management.group_purchase_contract_line_user_manager"

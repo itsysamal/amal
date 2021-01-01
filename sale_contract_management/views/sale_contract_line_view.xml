@@ -145,7 +145,7 @@
         <menuitem
                 id="sale_contract_line_2_menu"
                 parent="sale_contract_management.sale_contract_menu"
-                name="Sale Contract Lines"
+                name="Ship Lines"
                 action="sale_contract_line_action"
                 sequence="2"
                 groups="sale_contract_management.group_sale_contract_line_user_1,sale_contract_management.group_sale_contract_line_user_manager"
