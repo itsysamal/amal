@@ -4,7 +4,7 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from odoo import models, fields, api, exceptions, _
 from odoo.exceptions import AccessError, UserError, ValidationError
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, float_compare
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, float_compare, float_round, float_repr
 
 
 class ProductConversion(models.Model):
@@ -54,6 +54,100 @@ class ProductConversion(models.Model):
     journal_id = fields.Many2one('account.journal', string='Journal', domain=[('type', '=', 'general')], required=True,
                                  readonly=True,
                                  states={'draft': [('readonly', False)]})
+    total_remove_cost = fields.Float(compute='get_total_remove_cost_price', copy=False)
+    total_add_cost = fields.Float(compute='get_total_add_costs_price', copy=False)
+    total_add_final_cost = fields.Float(compute='get_total_add_costs_price', copy=False)
+    total_expense_cost = fields.Float(compute='get_total_expense_cost_price', copy=False)
+
+    @api.depends('product_to_remove_ids', 'product_to_remove_ids.cost_price')
+    def get_total_remove_cost_price(self):
+        total_remove_cost = 0.0
+        for rec in self:
+            if rec.product_to_remove_ids:
+                for order in rec.product_to_remove_ids:
+                    total_remove_cost += order.cost_price
+                rec.total_remove_cost = total_remove_cost
+            else:
+                rec.total_remove_cost = 0.0
+
+    @api.depends('product_to_add_ids', 'product_to_add_ids.cost_price', 'product_to_add_ids.change_cost_price',
+                 'product_to_add_ids.new_cost_price_edit')
+    def get_total_add_costs_price(self):
+        total_add_cost = 0.0
+        total_add_final_cost = 0.0
+        for rec in self:
+            if rec.product_to_add_ids:
+                for order in rec.product_to_add_ids:
+                    if order.fixed_percentage != 'change_cost_price':
+                        total_add_cost += order.cost_price
+                    else:
+                        total_add_cost += order.change_cost_price
+                    total_add_final_cost += order.new_cost_price_edit
+                rec.total_add_cost = total_add_cost
+                rec.total_add_final_cost = total_add_final_cost
+            else:
+                rec.total_add_cost = 0.0
+                rec.total_add_final_cost = 0.0
+
+    @api.depends('product_expense_ids', 'product_expense_ids.cost_price')
+    def get_total_expense_cost_price(self):
+        total_expense_cost = 0.0
+        for rec in self:
+            if rec.product_expense_ids:
+                for order in rec.product_expense_ids:
+                    total_expense_cost += order.cost_price
+                rec.total_expense_cost = total_expense_cost
+            else:
+                rec.total_expense_cost = 0.0
+
+    def set_to_draft(self):
+        self.write({'state': 'draft'})
+
+    def action_cancel(self):
+        self.write({'state': 'cancel'})
+        for move in self.move_ids:
+            move.mapped('line_ids').remove_move_reconcile()
+        documents = None
+        for order in self:
+            if order.state == 'done' and order.product_to_remove_ids:
+                order_lines_quantities = {order_line: (order_line.quantity, 0) for order_line in
+                                          order.product_to_remove_ids}
+                documents = self.env['stock.picking']._log_activity_get_documents(order_lines_quantities, 'move_ids',
+                                                                                  'UP')
+        self.mapped('stock_picking_ids').action_cancel()
+        self.mapped('move_ids').button_draft()
+        self.mapped('move_ids').button_cancel()
+        if documents:
+            filtered_documents = {}
+            for (parent, responsible), rendering_context in documents.items():
+                if parent._name == 'stock.picking':
+                    if parent.state == 'cancel':
+                        continue
+                filtered_documents[(parent, responsible)] = rendering_context
+            # self._log_decrease_ordered_quantity(filtered_documents, cancel=True)
+        for order in self:
+            for move in order.product_to_add_ids.mapped('move_ids'):
+                if move.state == 'done':
+                    raise UserError(
+                        _('Unable to cancel Conversion order %s as some receptions have already been done.') % (
+                            order.name))
+            # If the product is MTO, change the procure_method of the the closest move to purchase to MTS.
+            # The purpose is to link the po that the user will manually generate to the existing moves's chain.
+            if order.state in ('draft', 'assigned', 'done'):
+                for order_line in order.product_to_add_ids:
+                    order_line.move_ids._action_cancel()
+                    if order_line.move_dest_ids:
+                        move_dest_ids = order_line.move_dest_ids
+                        move_dest_ids._action_cancel()
+                        # if order_line.propagate_cancel:
+                        #     move_dest_ids._action_cancel()
+                        # else:
+                        #     move_dest_ids.write({'procure_method': 'make_to_stock'})
+                        #     move_dest_ids._recompute_state()
+
+            for pick in order.stock_picking_ids.filtered(lambda r: r.state != 'cancel'):
+                pick.action_cancel()
+            order.product_to_add_ids.write({'move_dest_ids': [(5, 0, 0)]})
 
     @api.depends('move_ids')
     def _entry_count(self):
@@ -149,6 +243,19 @@ class ProductConversion(models.Model):
         self.write({'state': 'done'})
         previous_product_uom_qty = False
         stock_picking = self.env['stock.picking']
+        if float_repr(float_round(self.total_remove_cost, 2), 2) != float_repr(float_round(self.total_add_cost, 2), 2):
+            raise UserError(
+                _("Total Cost Price of Remove lines not balanced with "
+                  "total Cost Price of Add lines and the difference =  %s."
+                  % (float_repr(float_round(self.total_remove_cost, 2) - float_round(self.total_add_cost, 2), 2))))
+        if (float_round(self.total_remove_cost, 2) + float_round(self.total_expense_cost, 2)) != float_round(
+                self.total_add_final_cost, 2):
+            raise UserError(
+                _("Total Cost Price of Remove and Allocated Expense lines not balanced with "
+                  "Total Final Cost of Add lines and the difference =  %s."
+                  % (float_repr(
+                    (float_round(self.total_remove_cost, 2) + float_round(self.total_expense_cost, 2)) - float_round(
+                        self.total_add_final_cost, 2), 2))))
         for order in self.product_to_add_ids:
             if any([ptype in ['product', 'consu'] for ptype in order.mapped('product_id.type')]):
                 pickings = self.stock_picking_ids.filtered(
@@ -238,9 +345,6 @@ class ProductConversion(models.Model):
         if procurements:
             self.env['procurement.group'].run(procurements)
         return True
-
-    def action_cancel(self):
-        self.write({'state': 'cancel'})
 
 
 class ProductConversionInh(models.Model):

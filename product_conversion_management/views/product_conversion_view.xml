@@ -10,7 +10,10 @@
                                 type="object" class="oe_highlight"/>
                         <button string="Confirm" name="action_confirm" states="assigned" type="object"
                                 class="oe_highlight"/>
-                        <button string="Cancel" name="action_cancel" states="draft" type="object" class="oe_highlight"/>
+                        <button string="Set To Draft" name="set_to_draft" states="assigned,done,cancel" type="object"
+                                class="oe_highlight"/>
+                        <button string="Cancel" name="action_cancel" states="draft,assigned,done" type="object"
+                                class="oe_highlight"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,assigned,done"/>
                     </header>
                     <sheet string="Product Conversion">
@@ -48,13 +51,26 @@
                                        groups="stock.group_stock_multi_warehouses" force_save="1"/>
                             </group>
                         </group>
+                        <group name="Total">
+                            <group string="Total Remove">
+                                <field name="total_remove_cost" string="Total Cost Price"/>
+                            </group>
+                            <group string="Total Add">
+                                <field name="total_add_cost" string="Total Cost Price"/>
+                                <field name="total_add_final_cost" string="Total Final Cost Price"/>
+                            </group>
+                            <group string="Total Allocated Expense">
+                                <field name="total_expense_cost" string="Total Cost Price"/>
+                            </group>
+                        </group>
                         <group string="Remove"/>
                         <div name="product_remove" string="Remove">
                             <field name="check_availability" readonly="1" invisible="1"/>
                             <field name="product_to_remove_ids" string="Remove">
                                 <tree string="Product To Remove" editable="top">
                                     <field name="name"/>
-                                    <field name="conversion_id" options="{'no_create': True}" readonly="True"/>
+                                    <field name="conversion_id" options="{'no_create': True}" readonly="True"
+                                           optional="hide"/>
                                     <field name="product_id" options="{'no_create': True}"/>
                                     <field name="product_tmp_id" options="{'no_create': True}" invisible="1"/>
                                     <field name="location_id" options="{'no_create': True}"/>
@@ -62,10 +78,10 @@
                                     <field name="move_ids" options="{'no_create': True}" invisible="1"/>
                                     <field name="lot_id" options="{'no_create': True}"
                                            domain="[('product_id','=', product_id)]"
-                                           context="{'default_product_id': product_id}"/>
-                                    <field name="analytic_account_id" options="{'no_create': True}"/>
-                                    <field name="analytic_tag_ids" options="{'no_create': True}"/>
-                                    <field name="branch_id" options="{'no_create': True}"/>
+                                           context="{'default_product_id': product_id}" optional="hide"/>
+                                    <field name="analytic_account_id" options="{'no_create': True}" optional="hide"/>
+                                    <field name="analytic_tag_ids" options="{'no_create': True}" optional="hide"/>
+                                    <field name="branch_id" options="{'no_create': True}" optional="hide"/>
                                     <field name="quantity" sum="Quantity"/>
                                     <field name="product_uom" options="{'no_create': True}"/>
                                     <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
@@ -82,17 +98,18 @@
                             <field name="product_to_add_ids">
                                 <tree string="Product To Add" editable="top">
                                     <field name="name"/>
-                                    <field name="conversion_id" options="{'no_create': True}" readonly="True"/>
+                                    <field name="conversion_id" options="{'no_create': True}" readonly="True"
+                                           optional="hide"/>
                                     <field name="product_id" options="{'no_create': True}"/>
                                     <field name="product_tmp_id" options="{'no_create': True}" invisible="1"/>
                                     <field name="date_planned"/>
                                     <field name="location_id" options="{'no_create': True}"/>
                                     <field name="lot_id" options="{'no_create': True}"
                                            domain="[('product_id','=', product_id)]"
-                                           context="{'default_product_id': product_id}"/>
-                                    <field name="analytic_account_id" options="{'no_create': True}"/>
-                                    <field name="analytic_tag_ids" options="{'no_create': True}"/>
-                                    <field name="branch_id" options="{'no_create': True}"/>
+                                           context="{'default_product_id': product_id}" optional="hide"/>
+                                    <field name="analytic_account_id" options="{'no_create': True}" optional="hide"/>
+                                    <field name="analytic_tag_ids" options="{'no_create': True}" optional="hide"/>
+                                    <field name="branch_id" options="{'no_create': True}" optional="hide"/>
                                     <field name="quantity" sum="Quantity"/>
                                     <field name="product_uom" options="{'no_create': True}"/>
                                     <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
@@ -101,13 +118,16 @@
                                            attrs="{'invisible': [('fixed_percentage', '!=', 'fixed')]}"
                                            sum="Fixed Unit Price"/>
                                     <field name="unit_price"
-                                           attrs="{'invisible': [('fixed_percentage', '!=', 'percentage')]}"
+                                           attrs="{'invisible': [('fixed_percentage', 'not in', ('percentage','change_cost_price'))]}"
                                            sum="Unit Price"/>
                                     <field name="percentage"
                                            attrs="{'readonly': [('fixed_percentage', '!=', 'percentage')]}"
                                            sum="Percentage"/>
-                                    <field name="cost_price" sum="Cost Price"/>
-                                    <field name="allocate_expense" sum="Allocated Expences"/>
+                                    <field name="cost_price" sum="Cost Price"
+                                           attrs="{'invisible': [('fixed_percentage', '=', 'change_cost_price')]}"/>
+                                    <field name="change_cost_price" sum="Change Cost Price"
+                                           attrs="{'invisible': [('fixed_percentage', '!=', 'change_cost_price')]}"/>
+                                    <field name="allocate_expense" sum="Allocated Expenses"/>
                                     <field name="remaining_cost" sum="Remaining Cos"/>
                                     <field name="new_cost_price_edit" sum="Final Cost"/>
                                     <field name="final_item_cost" sum="Final Item Cost"/>
@@ -120,13 +140,17 @@
                             <field name="product_expense_ids">
                                 <tree string="Allocated Expenses" editable="top">
                                     <field name="name"/>
-                                    <field name="conversion_id" options="{'no_create': True}" readonly="True"/>
+                                    <field name="conversion_id" options="{'no_create': True}" readonly="True"
+                                           optional="hide"/>
                                     <field name="product_id" options="{'no_create': True}"/>
                                     <field name="product_tmp_id" options="{'no_create': True}" invisible="1"/>
                                     <field name="analytic_account_id" options="{'no_create': True}"/>
                                     <field name="analytic_tag_ids" options="{'no_create': True}"/>
                                     <field name="branch_id" options="{'no_create': True}"/>
-                                    <field name="quantity" sum="Quantity"/>
+                                    <field name="quantity_type"/>
+                                    <field name="quantity" attrs="{'invisible': [('quantity_type', '!=', 'compute')]}"/>
+                                    <field name="change_quantity"
+                                           attrs="{'invisible': [('quantity_type', '!=', 'fixed')]}"/>
                                     <field name="product_uom" options="{'no_create': True}"/>
                                     <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
                                     <field name="unit_price" sum="Unit Price"/>
