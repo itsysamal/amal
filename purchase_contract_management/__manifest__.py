@@ -6,7 +6,7 @@
     'description': """
      Purchase Contract Management
     """,
-    'summary': 'Purchase Contract Management',
+    'summary': 'Purchase Contract Management.',
     'author': "Doaa Khaled",
     'E-mail': "doaakhaled6969@gmail.com",
     'images': ['static/description/icon.png'],
