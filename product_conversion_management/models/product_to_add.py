@@ -11,7 +11,7 @@ class ProductAdd(models.Model):
     _rec_name = 'name'
     _order = 'name DESC'
 
-    name = fields.Char(string="Name", required=True, copy=False)
+    name = fields.Char(string="Name", required=True, copy=False, default=lambda self: self.conversion_id.name)
     conversion_id = fields.Many2one('product.conversion', string="Product Conversion")
     product_id = fields.Many2one('product.product', string="Product", required=True)
     product_tmp_id = fields.Many2one('product.template', related='product_id.product_tmpl_id',
@@ -49,7 +49,7 @@ class ProductAdd(models.Model):
     move_ids = fields.One2many('stock.move', 'product_add_id', string='Stock Moves')
     move_dest_ids = fields.One2many('stock.move', 'created_purchase_line_id', 'Downstream Moves')
 
-    date_planned = fields.Datetime(string='Scheduled Date', index=True, required=True)
+    date_planned = fields.Datetime(string='Scheduled Date', index=True, required=True, default=fields.Datetime.now)
 
     @api.depends('product_id', 'unit_price', 'quantity', 'editable_unit_price')
     def compute_cost_price(self):
@@ -104,10 +104,10 @@ class ProductAdd(models.Model):
                 total_cost_of_remove += remove.cost_price
             if product.fixed_percentage != 'change_cost_price':
                 product.remaining_cost = product.cost_price - (
-                            total_cost_of_remove / len(product.conversion_id.product_to_add_ids))
+                        total_cost_of_remove / len(product.conversion_id.product_to_add_ids))
             elif product.fixed_percentage == 'change_cost_price':
                 product.remaining_cost = product.change_cost_price - (
-                            total_cost_of_remove / len(product.conversion_id.product_to_add_ids))
+                        total_cost_of_remove / len(product.conversion_id.product_to_add_ids))
             else:
                 product.remaining_cost = 0.0
 

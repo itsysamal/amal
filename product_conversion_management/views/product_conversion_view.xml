@@ -102,7 +102,7 @@
                                            optional="hide"/>
                                     <field name="product_id" options="{'no_create': True}"/>
                                     <field name="product_tmp_id" options="{'no_create': True}" invisible="1"/>
-                                    <field name="date_planned"/>
+                                    <field name="date_planned" optional="hide"/>
                                     <field name="location_id" options="{'no_create': True}"/>
                                     <field name="lot_id" options="{'no_create': True}"
                                            domain="[('product_id','=', product_id)]"
@@ -111,7 +111,7 @@
                                     <field name="analytic_tag_ids" options="{'no_create': True}" optional="hide"/>
                                     <field name="branch_id" options="{'no_create': True}" optional="hide"/>
                                     <field name="quantity" sum="Quantity"/>
-                                    <field name="product_uom" options="{'no_create': True}"/>
+                                    <field name="product_uom" options="{'no_create': True}" optional="hide"/>
                                     <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
                                     <field name="fixed_percentage"/>
                                     <field name="editable_unit_price"
@@ -128,9 +128,9 @@
                                     <field name="change_cost_price" sum="Change Cost Price"
                                            attrs="{'invisible': [('fixed_percentage', '!=', 'change_cost_price')]}"/>
                                     <field name="allocate_expense" sum="Allocated Expenses"/>
-                                    <field name="remaining_cost" sum="Remaining Cos"/>
+                                    <field name="remaining_cost" sum="Remaining Cos" optional="hide"/>
                                     <field name="new_cost_price_edit" sum="Final Cost"/>
-                                    <field name="final_item_cost" sum="Final Item Cost"/>
+                                    <field name="final_item_cost" sum="Final Item Cost" optional="hide"/>
 
                                 </tree>
                             </field>
