@@ -97,7 +97,7 @@
                         <div name="product_add" string="Add">
                             <field name="product_to_add_ids">
                                 <tree string="Product To Add" editable="top">
-                                    <field name="name"/>
+                                    <field name="name" optional="hide"/>
                                     <field name="conversion_id" options="{'no_create': True}" readonly="True"
                                            optional="hide"/>
                                     <field name="product_id" options="{'no_create': True}"/>
