@@ -68,7 +68,7 @@
                             <field name="check_availability" readonly="1" invisible="1"/>
                             <field name="product_to_remove_ids" string="Remove">
                                 <tree string="Product To Remove" editable="top">
-                                    <field name="name"/>
+                                    <field name="name" optional="hide"/>
                                     <field name="conversion_id" options="{'no_create': True}" readonly="True"
                                            optional="hide"/>
                                     <field name="product_id" options="{'no_create': True}"/>
@@ -139,7 +139,7 @@
                         <div name="product_expense_ids" string="Allocated Expenses">
                             <field name="product_expense_ids">
                                 <tree string="Allocated Expenses" editable="top">
-                                    <field name="name"/>
+                                    <field name="name" optional="hide"/>
                                     <field name="conversion_id" options="{'no_create': True}" readonly="True"
                                            optional="hide"/>
                                     <field name="product_id" options="{'no_create': True}"/>

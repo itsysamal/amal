@@ -295,7 +295,7 @@ class ProductConversion(models.Model):
                                 }),
                         (0, 0, {'partner_id': self.partner_shipping_id.id,
                                 'credit': order.allocate_expense,
-                                'account_id': order.product_id.categ_id.property_account_expense_categ_id.id,
+                                'account_id': expense.product_id.property_account_expense_id.id or expense.product_id.categ_id.property_account_expense_categ_id.id,
                                 'conversion_id': self.id,
                                 'product_id': order.product_id.id,
                                 'analytic_account_id': expense.analytic_account_id.id,

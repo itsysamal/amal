@@ -11,7 +11,7 @@ class ProductAdd(models.Model):
     _rec_name = 'name'
     _order = 'name DESC'
 
-    name = fields.Char(string="Name", required=True, copy=False, default="Product Conversion")
+    name = fields.Char(string="Name", required=True, default="Product Conversion")
     conversion_id = fields.Many2one('product.conversion', string="Product Conversion")
     product_id = fields.Many2one('product.product', string="Product", required=True)
     product_tmp_id = fields.Many2one('product.template', related='product_id.product_tmpl_id',

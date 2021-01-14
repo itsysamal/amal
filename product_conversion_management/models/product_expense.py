@@ -11,7 +11,7 @@ class ProductExpense(models.Model):
     _rec_name = 'name'
     _order = 'name DESC'
 
-    name = fields.Char(string="Name", required=True, copy=False)
+    name = fields.Char(string="Name", required=True, default="Product Conversion")
     conversion_id = fields.Many2one('product.conversion', string="Product Conversion")
     product_id = fields.Many2one('product.product', string="Product", required=True,
                                  domain=[('type', 'in', ('consu', 'service'))])
