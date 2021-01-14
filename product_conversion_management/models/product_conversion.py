@@ -243,7 +243,7 @@ class ProductConversion(models.Model):
         self.write({'state': 'done'})
         previous_product_uom_qty = False
         stock_picking = self.env['stock.picking']
-        if float_repr(float_round(self.total_remove_cost, 2), 2) != float_repr(float_round(self.total_add_cost, 2), 2):
+        if float_round(self.total_remove_cost, 2) != float_round(self.total_add_cost, 2):
             raise UserError(
                 _("Total Cost Price of Remove lines not balanced with "
                   "total Cost Price of Add lines and the difference =  %s."
