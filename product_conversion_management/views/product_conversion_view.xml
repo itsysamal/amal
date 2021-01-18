@@ -10,7 +10,7 @@
                                 type="object" class="oe_highlight"/>
                         <button string="Confirm" name="action_confirm" states="assigned" type="object"
                                 class="oe_highlight"/>
-                        <button string="Set To Draft" name="set_to_draft" states="assigned,done,cancel" type="object"
+                        <button string="Set To Draft" name="set_to_draft" states="assigned,cancel" type="object"
                                 class="oe_highlight"/>
                         <button string="Cancel" name="action_cancel" states="draft,assigned,done" type="object"
                                 class="oe_highlight"/>

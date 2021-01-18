@@ -287,7 +287,7 @@ class ProductConversion(models.Model):
                     'line_ids': [
                         (0, 0, {'partner_id': self.partner_shipping_id.id,
                                 'debit': order.allocate_expense,
-                                'account_id': order.product_id.categ_id.property_stock_valuation_account_id.id,
+                                'account_id': order.product_id.categ_id.property_stock_account_output_categ_id.id,
                                 'conversion_id': self.id,
                                 'product_id': order.product_id.id,
                                 'analytic_account_id': order.analytic_account_id.id,
