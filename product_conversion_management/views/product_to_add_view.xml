@@ -37,10 +37,13 @@
                                        attrs="{'invisible': [('fixed_percentage', '!=', 'fixed')]}"
                                        sum="Fixed Unit Price"/>
                                 <field name="unit_price"
-                                       attrs="{'invisible': [('fixed_percentage', '!=', 'percentage')]}"
+                                       attrs="{'invisible': [('fixed_percentage', 'not in', ('percentage','change_cost_price'))]}"
                                        sum="Unit Price"/>
-                                <field name="cost_price" sum="Cost Price"/>
-                                <field name="allocate_expense" sum="Allocated Expences"/>
+                                <field name="cost_price" sum="Cost Price"
+                                       attrs="{'invisible': [('fixed_percentage', '=', 'change_cost_price')]}"/>
+                                <field name="change_cost_price" sum="Change Cost Price"
+                                       attrs="{'invisible': [('fixed_percentage', '!=', 'change_cost_price')]}"/>
+                                <field name="allocate_expense" sum="Allocated Expenses"/>
                                 <field name="remaining_cost" sum="Remaining Cos"/>
                                 <field name="new_cost_price_edit" sum="Final Cost"/>
                                 <field name="final_item_cost" sum="Final Item Cost"/>
@@ -78,10 +81,13 @@
                            attrs="{'invisible': [('fixed_percentage', '!=', 'fixed')]}"
                            sum="Fixed Unit Price"/>
                     <field name="unit_price"
-                           attrs="{'invisible': [('fixed_percentage', '!=', 'percentage')]}"
+                           attrs="{'invisible': [('fixed_percentage', 'not in', ('percentage','change_cost_price'))]}"
                            sum="Unit Price"/>
-                    <field name="cost_price" sum="Cost Price"/>
-                    <field name="allocate_expense" sum="Allocated Expences"/>
+                    <field name="cost_price" sum="Cost Price"
+                           attrs="{'invisible': [('fixed_percentage', '=', 'change_cost_price')]}"/>
+                    <field name="change_cost_price" sum="Change Cost Price"
+                           attrs="{'invisible': [('fixed_percentage', '!=', 'change_cost_price')]}"/>
+                    <field name="allocate_expense" sum="Allocated Expenses"/>
                     <field name="remaining_cost" sum="Remaining Cos"/>
                     <field name="new_cost_price_edit" sum="Final Cost"/>
                     <field name="final_item_cost" sum="Final Item Cost"/>

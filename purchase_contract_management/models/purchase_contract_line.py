@@ -19,7 +19,7 @@ class PurchaseContractLine(models.Model):
     contract_date = fields.Date(related='contract_id.contract_date', store=True, string='Contract Date', readonly=True)
 
     product_id = fields.Many2one('product.product', related='contract_id.product_id',
-                                          string="Product", store=True)
+                                 string="Product", store=True)
     invoice_no = fields.Char("Invoice No.")
     invoice_date = fields.Date("Invoice Date")
     customs_no = fields.Char("Customs No.")
@@ -29,6 +29,10 @@ class PurchaseContractLine(models.Model):
     bl_no = fields.Char("BL No.")
     bl_date = fields.Date("BL Date/ETS")
     vessel_date = fields.Date("Vessel Date/ETS")
+    vessel_name = fields.Char("Vessel Name")
+    container_size_id = fields.Many2one('container.size', string="Container Size")
+    sale_contract_line_ids = fields.One2many('sale.contract.line', 'purchase_contract_line_id',
+                                             string="Sale Contract Line")
     pol = fields.Char("POL")
     pod = fields.Char("POD")
     purchase_created = fields.Boolean()

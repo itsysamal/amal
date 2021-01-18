@@ -14,7 +14,7 @@ class SaleShipCostLine(models.Model):
     sale_contract_line_id = fields.Many2one('sale.contract.line', string="Sale Contract Line")
     freight = fields.Float("Freight")
     thc = fields.Float("THC")
-    currency_id = fields.Many2one('res.currency', string="Currency")
+    currency_id = fields.Many2one('res.currency', string="Currency",default=lambda self: self.env.company.currency_id)
     sale_contract_line_ids = fields.Many2many('sale.contract.line', string='Sale Contract Line',
                                                   compute='compute_sale_contract_line_ids')
 

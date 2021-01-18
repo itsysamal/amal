@@ -21,7 +21,10 @@
                             <group>
                                 <field name="analytic_tag_ids" options="{'no_create': True}"/>
                                 <field name="branch_id" options="{'no_create': True}"/>
-                                <field name="quantity"/>
+                                <field name="quantity_type"/>
+                                <field name="quantity" attrs="{'invisible': [('quantity_type', '!=', 'compute')]}"/>
+                                <field name="change_quantity"
+                                       attrs="{'invisible': [('quantity_type', '!=', 'fixed')]}"/>
                                 <field name="product_uom" options="{'no_create': True}"/>
                                 <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
                                 <field name="unit_price"/>
@@ -44,7 +47,9 @@
                     <field name="analytic_account_id" options="{'no_create': True}"/>
                     <field name="analytic_tag_ids" options="{'no_create': True}"/>
                     <field name="branch_id" options="{'no_create': True}"/>
-                    <field name="quantity" sum="Quantity"/>
+                    <field name="quantity_type"/>
+                    <field name="quantity" attrs="{'invisible': [('quantity_type', '!=', 'compute')]}"/>
+                    <field name="change_quantity" attrs="{'invisible': [('quantity_type', '!=', 'fixed')]}"/>
                     <field name="product_uom" options="{'no_create': True}"/>
                     <field name="product_uom_category_id" options="{'no_create': True}" invisible="1"/>
                     <field name="unit_price" sum="Unit Price"/>

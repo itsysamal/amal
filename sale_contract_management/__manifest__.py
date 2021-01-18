@@ -23,7 +23,7 @@
         'views/account_move_view.xml',
     ],
     'depends': ['base', 'sale', 'product', 'account', 'branch', 'product_brand_inventory',
-                'eq_sale_advance_payment', 'gio_product_analytic','sales_team','purchase_contract_management'],
+                'eq_sale_advance_payment', 'gio_product_analytic','sales_team'],
     'installable': True,
     'auto_install': False,
     'application': True,

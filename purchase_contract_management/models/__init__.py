@@ -8,3 +8,4 @@ from . import purchase_contract_line
 from . import contract_operation_lines
 from . import ship_cost_line
 from . import product_template
+from . import contract_type

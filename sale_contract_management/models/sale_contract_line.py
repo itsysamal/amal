@@ -77,6 +77,7 @@ class SaleContractLine(models.Model):
             'order_line': [(0, 0, ope) for ope in [{
                 'name': self.product_id.name, 'product_id': self.product_id.id,
                 'product_uom_qty': self.quantity,
+                'currency_id': self.currency_id.id,
                 'product_uom': self.product_id.uom_id.id, 'price_unit': self.sale_contract_id.unit_price,
                 'sale_analytic_account_id': self.product_id.gio_analytic_account.id
             }]],

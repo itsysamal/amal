@@ -14,7 +14,7 @@ class ShipCostLine(models.Model):
     purchase_contract_line_id = fields.Many2one('purchase.contract.line', string="Purchase Contract Line")
     freight = fields.Float("Freight")
     thc = fields.Float("THC")
-    currency_id = fields.Many2one('res.currency', string="Currency")
+    currency_id = fields.Many2one('res.currency', string="Currency", default=lambda self: self.env.company.currency_id)
     purchase_contract_line_ids = fields.Many2many('purchase.contract.line', string='Purchase Contract Line',
                                                   compute='compute_purchase_contract_line_ids')
 

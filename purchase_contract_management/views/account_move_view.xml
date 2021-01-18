@@ -97,5 +97,16 @@
                 </xpath>
             </field>
         </record>
+         <record id="purchase_contract_management_view_inherit_account_move_form_contract" model="ir.ui.view">
+            <field name="name">view.inherit.account.move.form</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="purchase_contract_management.view_inherit_account_move_form_contract"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='contract_id']" position="attributes">
+                    <attribute name="attrs">{'invisible':[('check_invoice', '=',True)]}
+                    </attribute>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

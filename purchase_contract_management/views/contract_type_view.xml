@@ -1,0 +1,130 @@
+<odoo>
+    <data>
+        <record id="contract_type_form_view" model="ir.ui.view">
+            <field name="name">Contract Type.form.view</field>
+            <field name="model">contract.type</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet string="Contract Type">
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" required="1"/>
+                            </h1>
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="contract_type_tree_view" model="ir.ui.view">
+            <field name="name">Contract Type.tree.view</field>
+            <field name="model">contract.type</field>
+            <field name="arch" type="xml">
+                <tree string="Contract Type">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <!-- Actions and Menuitems -->
+        <record id="contract_type_action" model="ir.actions.act_window">
+            <field name="name">Contract Type</field>
+            <field name="res_model">contract.type</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create New Contract Type.
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="contract_type_menu_id"
+                parent="purchase.menu_purchase_config"
+                name="Contract Type"
+                action="contract_type_action"
+                sequence="5"/>
+        <record id="contract_deliver_to_form_view" model="ir.ui.view">
+            <field name="name">contract.deliver.to.form.view</field>
+            <field name="model">contract.deliver.to</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet string="Contract Deliver To">
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" required="1"/>
+                            </h1>
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="contract_deliver_to_tree_view" model="ir.ui.view">
+            <field name="name">contract.deliver.to.tree.view</field>
+            <field name="model">contract.deliver.to</field>
+            <field name="arch" type="xml">
+                <tree string="Contract Deliver To">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <!-- Actions and Menuitems -->
+        <record id="contract_deliver_to_action" model="ir.actions.act_window">
+            <field name="name">Contract Deliver To</field>
+            <field name="res_model">contract.deliver.to</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create New Contract Deliver To.
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="contract_deliver_to_menu_id"
+                parent="purchase.menu_purchase_config"
+                name="Contract Deliver To"
+                action="contract_deliver_to_action"
+                sequence="6"/>
+        <record id="container_size_form_view" model="ir.ui.view">
+            <field name="name">container.size.form.view</field>
+            <field name="model">container.size</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet string="Container Size">
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" required="1"/>
+                            </h1>
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="container_size_tree_view" model="ir.ui.view">
+            <field name="name">container.size.tree.view</field>
+            <field name="model">container.size</field>
+            <field name="arch" type="xml">
+                <tree string="Container Size">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <!-- Actions and Menuitems -->
+        <record id="container_size_action" model="ir.actions.act_window">
+            <field name="name">Container Size</field>
+            <field name="res_model">container.size</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create New Container Size.
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="container_size_menu_id"
+                parent="purchase.menu_purchase_config"
+                name="Container Size"
+                action="container_size_action"
+                sequence="6"/>
+    </data>
+</odoo>
