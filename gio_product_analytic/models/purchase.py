@@ -18,8 +18,7 @@ class Purchase(models.Model):
 
     def _prepare_stock_moves(self, picking):
         res = super(Purchase, self)._prepare_stock_moves(picking)
-        if len(res) > 0:
-            res[0]['analytic_account_id'] = self.account_analytic_id.id
+        res[0]['analytic_account_id'] = self.account_analytic_id.id
         return res
 
 
