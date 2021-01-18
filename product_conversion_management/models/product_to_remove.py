@@ -26,16 +26,16 @@ class ProductRemove(models.Model):
                                   domain="[('category_id', '=', product_uom_category_id)]")
     product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True)
     branch_id = fields.Many2one('res.branch', string='Branch')
-    quantity = fields.Float(string="Quantity", default=1.0)
-    remaining_qty = fields.Float(string="Remaining quantity")
-    availability = fields.Float(string="Available", store=True)
+    quantity = fields.Float(string="Quantity", default=1.0, digits=(12, 3))
+    remaining_qty = fields.Float(string="Remaining quantity", digits=(12, 3))
+    availability = fields.Float(string="Available", store=True, digits=(12, 3))
     fixed_percentage = fields.Selection([('fixed', 'Fixed'),
                                          ('percentage', 'Percentage')],
                                         'Cost Type',
                                         copy=False, tracking=True)
-    unit_price = fields.Float(string="Unit Price", compute='compute_unit_price')
+    unit_price = fields.Float(string="Unit Price", compute='compute_unit_price', digits=(12, 3))
 
-    cost_price = fields.Float(string="Cost Price", compute='compute_inventory_valuation_cost_price')
+    cost_price = fields.Float(string="Cost Price", compute='compute_inventory_valuation_cost_price', digits=(12, 3))
     move_ids = fields.One2many('stock.move', 'product_remove_id', string='Stock Moves')
     route_id = fields.Many2one('stock.location.route', string='Route', domain=[('sale_selectable', '=', True)],
                                ondelete='restrict', check_company=True)

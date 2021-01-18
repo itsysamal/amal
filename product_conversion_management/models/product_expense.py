@@ -25,15 +25,15 @@ class ProductExpense(models.Model):
                                   domain="[('category_id', '=', product_uom_category_id)]")
     product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True)
     branch_id = fields.Many2one('res.branch', string='Branch')
-    quantity = fields.Float(string="Quantity", compute='compute_quantity')
+    quantity = fields.Float(string="Quantity", compute='compute_quantity', digits=(12, 3))
     quantity_type = fields.Selection([('fixed', 'Fixed'),
                                       ('compute', 'Computed')],
                                      'Quantity Type', required=True,
                                      copy=False, tracking=True)
     change_quantity = fields.Float(string="Fixed Quantity")
-    unit_price = fields.Float(string="Unit Price")
+    unit_price = fields.Float(string="Unit Price", digits=(12, 3))
 
-    cost_price = fields.Float(string="Cost Price", compute='compute_cost_price')
+    cost_price = fields.Float(string="Cost Price", compute='compute_cost_price', digits=(12, 3))
 
     @api.depends('product_id', 'conversion_id', 'quantity_type',
                  'conversion_id.product_to_remove_ids', 'conversion_id.product_to_remove_ids.quantity')
@@ -69,4 +69,3 @@ class ProductExpense(models.Model):
             self.product_uom = self.product_id.uom_id
             self.analytic_account_id = self.product_id.gio_analytic_account
             self.analytic_tag_ids = self.product_id.gio_analytic_tag
-      

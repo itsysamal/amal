@@ -21,7 +21,7 @@ class ProductAdd(models.Model):
     analytic_account_id = fields.Many2one("account.analytic.account", string='Analytic Account')
     analytic_tag_ids = fields.Many2one("account.analytic.tag", string='Analytic Tags')
     branch_id = fields.Many2one('res.branch', string='Branch')
-    quantity = fields.Float(string="Quantity", default=1.0)
+    quantity = fields.Float(string="Quantity", default=1.0, digits=(12, 3))
     product_uom = fields.Many2one('uom.uom', string='UOM',
                                   domain="[('category_id', '=', product_uom_category_id)]")
     product_uom_category_id = fields.Many2one(related='product_id.uom_id.category_id', readonly=True)
@@ -33,18 +33,18 @@ class ProductAdd(models.Model):
                                         'Cost Type', required=True,
                                         copy=False, tracking=True)
     editable_unit_price = fields.Float(string="Fixed Unit Price")
-    unit_price = fields.Float(string="Unit Price", compute='compute_unit_price')
-    cost_price = fields.Float(string="Cost Price", compute='compute_cost_price')
-    change_cost_price = fields.Float(string="Fixed Cost Price")
-    remaining_qty = fields.Float(string="Remaining quantity")
-    availability = fields.Float(string="Available")
-    allocate_expense = fields.Float(string="Allocate Expense", compute='compute_allocate_expense')
+    unit_price = fields.Float(string="Unit Price", compute='compute_unit_price', digits=(12, 3))
+    cost_price = fields.Float(string="Cost Price", compute='compute_cost_price', digits=(12, 3))
+    change_cost_price = fields.Float(string="Fixed Cost Price", digits=(12, 3))
+    remaining_qty = fields.Float(string="Remaining quantity", digits=(12, 3))
+    availability = fields.Float(string="Available", digits=(12, 3))
+    allocate_expense = fields.Float(string="Allocate Expense", compute='compute_allocate_expense', digits=(12, 3))
 
-    remaining_cost = fields.Float(string="Remaining Cost", compute='compute_remaining_cost')
-    new_cost_price_edit = fields.Float(string="Final Cost", compute='compute_final_cost')
-    final_item_cost = fields.Float(string="Final Item Cost", compute='compute_final_item_cost')
+    remaining_cost = fields.Float(string="Remaining Cost", compute='compute_remaining_cost', digits=(12, 3))
+    new_cost_price_edit = fields.Float(string="Final Cost", compute='compute_final_cost', digits=(12, 3))
+    final_item_cost = fields.Float(string="Final Item Cost", compute='compute_final_item_cost', digits=(12, 3))
     new_cost_price = fields.Float(string="Final Item Cost",
-                                  compute='compute_inventory_valuation_new_cost_price')
+                                  compute='compute_inventory_valuation_new_cost_price', digits=(12, 3))
 
     move_ids = fields.One2many('stock.move', 'product_add_id', string='Stock Moves')
     move_dest_ids = fields.One2many('stock.move', 'created_purchase_line_id', 'Downstream Moves')
