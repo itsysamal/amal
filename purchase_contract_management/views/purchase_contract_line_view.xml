@@ -65,6 +65,7 @@
             <field name="model">purchase.contract.line</field>
             <field name="arch" type="xml">
                 <tree string="Purchase Contract Lines">
+                    <field name="purchase_created" invisible="1"/>
                     <field name="contract_id" invisible="1"/>
                     <field name="purchase_id" invisible="1"/>
                     <field name="name" modifiers="{}" string="Shipping line"/>
