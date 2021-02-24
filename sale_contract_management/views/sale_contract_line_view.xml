@@ -62,8 +62,8 @@
             <field name="model">sale.contract.line</field>
             <field name="arch" type="xml">
                 <tree string="Sale Contract Lines">
-                    <field name="sale_contract_id" invisible="1"/>
                     <field name="sale_created" invisible="1"/>
+                    <field name="sale_contract_id" invisible="1"/>
                     <field name="sale_id" invisible="1"/>
                     <field name="name" modifiers="{}" string="Shipping line"/>
                     <field name="product_id"/>

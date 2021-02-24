@@ -5,7 +5,7 @@ from odoo import api, fields, models, _
 
 class ShipCostLine(models.Model):
     _name = 'ship.cost.line'
-    _description = 'Purchase Contract Lines'
+    _description = 'Ship Cost Lines'
     _rec_name = 'name'
     _order = 'name DESC'
 
