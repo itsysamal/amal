@@ -6,13 +6,14 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
+                        <field name="purchase_created" invisible="1"/>
                         <button name="create_purchase_order"
                                 type="object" string="Create PO" class="oe_highlight"
                                 attrs="{'invisible': [('purchase_created', '=', True)]}"
                                 groups="purchase_contract_management.group_purchase_contract_line_user_manager"
                         />
                     </header>
-                    <sheet string="Purchase Contract Lines">
+                    <sheet string="Ship Lines">
                         <div class="oe_title">
                             <h1>
                                 <field name="name" required="1" string="Shipping line"/>
@@ -23,7 +24,6 @@
                                 <field name="purchase_created" invisible="1"/>
                                 <field name="contract_id" invisible="1"/>
                                 <field name="purchase_id" invisible="1"/>
-                                <!--<field name="state" invisible="1"/>-->
                                 <field name="vendor_id" invisible="1"/>
                                 <field name="currency_id" invisible="1"/>
                                 <field name="contract_date" invisible="1"/>
@@ -64,7 +64,8 @@
             <field name="name">purchase.contract.line.tree.view</field>
             <field name="model">purchase.contract.line</field>
             <field name="arch" type="xml">
-                <tree string="Purchase Contract Lines">
+                <tree string="Ship Lines">
+                    <field name="purchase_created" invisible="1"/>
                     <field name="contract_id" invisible="1"/>
                     <field name="purchase_id" invisible="1"/>
                     <field name="name" modifiers="{}" string="Shipping line"/>
@@ -92,7 +93,7 @@
             <field name="name">purchase.contract.line.view.search</field>
             <field name="model">purchase.contract.line</field>
             <field name="arch" type="xml">
-                <search string="Purchase Contract Lines">
+                <search string="Ship Lines">
                     <field name="contract_id"/>
                     <field name="purchase_id"/>
                     <field name="name"/>
@@ -105,12 +106,10 @@
                     <field name="vessel_name"/>
                     <field name="pol"/>
                     <field name="pod"/>
-
+                    <field name="purchase_created" invisible="1"/>
                     <group expand="1" string="Group By...">
                         <filter string="Contract" domain="[]" name="contract_id"
                                 context="{'group_by':'contract_id'}"/>
-                        <filter string="Sale Contract Line" domain="[]" name="sale_contract_line_id"
-                                context="{'group_by':'sale_contract_line_id'}"/>
                         <filter string="Product" domain="[]" name="product_id"
                                 context="{'group_by':'product_id'}"/>
 
@@ -141,7 +140,7 @@
 
         <!-- Actions and Menuitems -->
         <record id="purchase_contract_line_action" model="ir.actions.act_window">
-            <field name="name">Purchase Contract Lines</field>
+            <field name="name">Ship Lines</field>
             <field name="res_model">purchase.contract.line</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
