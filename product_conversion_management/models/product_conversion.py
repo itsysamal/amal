@@ -58,6 +58,7 @@ class ProductConversion(models.Model):
     total_add_cost = fields.Float(compute='get_total_add_costs_price', copy=False)
     total_add_final_cost = fields.Float(compute='get_total_add_costs_price', copy=False)
     total_expense_cost = fields.Float(compute='get_total_expense_cost_price', copy=False)
+    ignore_decimal_numbers = fields.Boolean("Ignore Decimal Numbers", copy=False)
 
     @api.depends('product_to_remove_ids', 'product_to_remove_ids.cost_price')
     def get_total_remove_cost_price(self):
@@ -240,22 +241,81 @@ class ProductConversion(models.Model):
         return True
 
     def action_confirm(self):
-        self.write({'state': 'done'})
         previous_product_uom_qty = False
         stock_picking = self.env['stock.picking']
-        if float_round(self.total_remove_cost, 2) != float_round(self.total_add_cost, 2):
-            raise UserError(
-                _("Total Cost Price of Remove lines not balanced with "
-                  "total Cost Price of Add lines and the difference =  %s."
-                  % (float_repr(float_round(self.total_remove_cost, 2) - float_round(self.total_add_cost, 2), 2))))
-        if (float_round(self.total_remove_cost, 2) + float_round(self.total_expense_cost, 2)) != float_round(
-                self.total_add_final_cost, 2):
-            raise UserError(
-                _("Total Cost Price of Remove and Allocated Expense lines not balanced with "
-                  "Total Final Cost of Add lines and the difference =  %s."
-                  % (float_repr(
-                    (float_round(self.total_remove_cost, 2) + float_round(self.total_expense_cost, 2)) - float_round(
-                        self.total_add_final_cost, 2), 2))))
+        if not self.ignore_decimal_numbers:
+            if float_round(self.total_remove_cost, 2) != float_round(self.total_add_cost, 2):
+                return {
+                    'name': _('Warning'),
+                    'type': 'ir.actions.act_window',
+                    'res_model': 'ignore.decimal',
+                    'views': [[False, 'form']],
+                    'target': 'new',
+                    'context': {
+                        'default_message': _("Total Cost Price of Remove lines not balanced with "
+                                             "total Cost Price of Add lines and the difference =  %s."
+                                             % (float_repr(
+                            float_round(self.total_remove_cost, 2) - float_round(self.total_add_cost, 2), 2))),
+                        'default_product_conversion_id': self.id,
+                    }
+                }
+            if (float_round(self.total_remove_cost, 2) + float_round(self.total_expense_cost, 2)) != float_round(
+                    self.total_add_final_cost, 2):
+                return {
+                    'name': _('Warning'),
+                    'type': 'ir.actions.act_window',
+                    'res_model': 'ignore.decimal',
+                    'views': [[False, 'form']],
+                    'target': 'new',
+                    'context': {
+                        'default_message': _("Total Cost Price of Remove and Allocated Expense lines not balanced with "
+                                             "Total Final Cost of Add lines and the difference =  %s."
+                                             % (float_repr(
+                            (float_round(self.total_remove_cost, 2) + float_round(self.total_expense_cost,
+                                                                                  2)) - float_round(
+                                self.total_add_final_cost, 2), 2))),
+                        'default_product_conversion_id': self.id,
+                    }
+                }
+        else:
+            if float_round(self.total_remove_cost, 2) != float_round(self.total_add_cost, 2):
+                if int(float_round(self.total_remove_cost, 2) - float_round(self.total_add_cost, 2)) > 0:
+                    return {
+                        'name': _('Warning'),
+                        'type': 'ir.actions.act_window',
+                        'res_model': 'ignore.decimal',
+                        'views': [[False, 'form']],
+                        'target': 'new',
+                        'context': {
+                            'default_message': _("Total Cost Price of Remove lines not balanced with "
+                                                 "total Cost Price of Add lines and the difference =  %s."
+                                                 % (float_repr(
+                                float_round(self.total_remove_cost, 2) - float_round(self.total_add_cost, 2), 2))),
+                            'default_product_conversion_id': self.id,
+                        }
+                    }
+            if (float_round(self.total_remove_cost, 2) + float_round(self.total_expense_cost, 2)) != float_round(
+                    self.total_add_final_cost, 2):
+                if int((float_round(self.total_remove_cost, 2) + float_round(self.total_expense_cost, 2)) - float_round(
+                        self.total_add_final_cost, 2)) > 0:
+                    return {
+                        'name': _('Warning'),
+                        'type': 'ir.actions.act_window',
+                        'res_model': 'ignore.decimal',
+                        'views': [[False, 'form']],
+                        'target': 'new',
+                        'context': {
+                            'default_message': _(
+                                "Total Cost Price of Remove and Allocated Expense lines not balanced with "
+                                "Total Final Cost of Add lines and the difference =  %s."
+                                % (float_repr(
+                                    (float_round(self.total_remove_cost, 2) + float_round(self.total_expense_cost,
+                                                                                          2)) - float_round(
+                                        self.total_add_final_cost, 2), 2))),
+                            'default_product_conversion_id': self.id,
+                        }
+                    }
+        self.write({'state': 'done'})
         for order in self.product_to_add_ids:
             if any([ptype in ['product', 'consu'] for ptype in order.mapped('product_id.type')]):
                 pickings = self.stock_picking_ids.filtered(
