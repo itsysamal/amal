@@ -18,6 +18,7 @@
         'views/product_to_add_view.xml',
         'views/stock_picking_view.xml',
         'views/product_expense_view.xml',
+        'wizard/ignore_decimal_view.xml',
     ],
     'depends': ['base','stock','product','account','branch','stock_analytic','stock_analytic_tag'],
     'installable': True,

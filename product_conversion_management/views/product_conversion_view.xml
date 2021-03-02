@@ -42,6 +42,7 @@
                                 <field name="partner_shipping_id" string="Partner"/>
                                 <field name="procurement_group_id_in" readonly="1" invisible="1"/>
                                 <field name="journal_id"/>
+                                <field name="ignore_decimal_numbers" invisible="1"/>
                             </group>
                             <group>
                                 <field name="procurement_group_id" readonly="1" invisible="1"/>
