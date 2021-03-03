@@ -293,7 +293,7 @@ class SaleContract(models.Model):
     pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', required=True, help='Pricelist when added',
                                    default=lambda self: self.env['product.pricelist'].search(
                                        [('company_id', 'in', [self.env.company.id, False])], limit=1).id)
-    spacial_pricelist_currency_id = fields.Many2one('res.currency', related='pricelist_id.currency_id', readonly=True)
+    spacial_pricelist_currency_id = fields.Many2one('res.currency', related='spacial_pricelist_id.currency_id', readonly=True)
     spacial_pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', help='Pricelist when added',
                                            required=True, default=lambda self: self.env['product.pricelist'].search(
             [('company_id', 'in', [self.env.company.id, False])], limit=1).id)
