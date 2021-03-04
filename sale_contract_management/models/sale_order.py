@@ -10,6 +10,13 @@ class SaleOrder(models.Model):
                                             states={'draft': [('readonly', False)]},
                                             readonly=True)
 
+    @api.onchange('partner_id')
+    def onchange_partner_id(self):
+        res = super(SaleOrder, self).onchange_partner_id()
+        if self.sale_contract_id:
+            self.pricelist_id = self.sale_contract_id.pricelist_id.id
+        return res
+
     def _prepare_invoice(self):
         res = super(SaleOrder, self)._prepare_invoice()
         for rec in self:

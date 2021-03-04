@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 {
     'name': 'Product Conversion Management',
-    'version': '13.0',
+    'version': '1.0',
     'category': 'Product',
     'description': """
      Product Conversion Management

@@ -73,6 +73,7 @@ class SaleContractLine(models.Model):
             'date_order': self.contract_date,
             'sale_contract_id_line': self.id,
             'sale_contract_id': self.sale_contract_id.id,
+            'pricelist_id': self.sale_contract_id.pricelist_id.id,
             'warehouse_id': self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1).id,
             'order_line': [(0, 0, ope) for ope in [{
                 'name': self.product_id.name, 'product_id': self.product_id.id,
