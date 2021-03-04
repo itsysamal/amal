@@ -10,7 +10,7 @@
 
     'category': 'Sales',
     'version': '13.0.0.1.0',
-    'depends': ['sale_management', 'purchase'],
+    'depends': ['sale_management', 'purchase','sale_contract_management'],
 
     'data': [
         'security/quick_purchase_from_sale_security.xml',
