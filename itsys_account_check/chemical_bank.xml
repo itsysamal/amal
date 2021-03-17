@@ -1,0 +1,46 @@
+<odoo>
+    <data>
+        <record id="chemical_bank_form" model="ir.ui.view">
+            <field name="name">chemical.bank.form</field>
+            <field name="model">chemical.bank</field>
+            <field name="arch" type="xml">
+                <form >
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="chemical_bank_tree" model="ir.ui.view">
+            <field name="name">chemical.bank.tree</field>
+            <field name="model">chemical.bank</field>
+            <field name="arch" type="xml">
+                <tree >
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="chemical_bank_action" model="ir.actions.act_window">
+            <field name="name">Chemical Bank</field>
+            <field name="res_model">chemical.bank</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create New Bank.
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="chemical_bank_menu"
+                parent="menu_check_root"
+                name="Chemical Bank"
+                action="chemical_bank_action"
+                sequence="3"
+               />
+    </data>
+</odoo>
