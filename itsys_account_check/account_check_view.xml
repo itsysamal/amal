@@ -1,5 +1,8 @@
 <odoo>
     <data>
+
+
+        <!--        added company_id to form and tree by marwa osama related to task RWD-19-->
         <record id="account_check_collect_form" model="ir.ui.view">
             <field name="name">account.check.form</field>
             <field name="model">account.check</field>
@@ -15,24 +18,40 @@
                                 class="oe_highlight"/>
                         <button name="button_bnk_return_check" states="deposit" string="Bank Return Check" type="object"
                                 class="oe_highlight"/>
-                        <button name="button_return_client_check" states="receive" string="Return to Client"
+                        <button name="button_return_client_check" states="receive,return" string="Return to Client"
                                 type="object" class="oe_highlight"/>
                         <button name="button_direct_deposit" states="receive" string="Direct Deposit" type="object"
                                 class="oe_highlight"/>
                         <button name="button_check_hashed" type="object" states="receive"
-                                string="Hash Check to supplier"
-                                class="oe_highlight"/>
+                                string="Hash Check to supplier" class="oe_highlight"/>
                         <button name="button_return_check_hashed" states="cheque_hashed" string="Return hashed check"
                                 type="object" class="oe_highlight"/>
                         <button name="close" states="collect,return_client" string="Close" type="object"
                                 class="oe_highlight"/>
+                        <button name="cancel" string="Cancel" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', 'in', ('cancel','confirm'))]}"/>
+
+                        <!--attrs="{'invisible':[('move_reconciled','=',True)]}"-->
                         <!--<button name="cash_collect" states="draft_collect" string="Cash Payment" type="object" class="oe_highlight" />-->
                         <field name="state" widget="statusbar"
                                statusbar_visible="draft_collect,receive,deposit,collect,return,cheque_hashed,return_cheque_hashed,return_client,deposit_direct,confirm"
                                readonly="1"/>
                     </header>
                     <sheet>
+                        <div class="oe_button_box">
+
+                            <button name="document_view" type="object" class="oe_stat_button" icon="fa-list-ol">
+
+                                <field string="Journal Entries" name="doc_count" widget="statinfo"/>
+                            </button>
+
+                            <!--<button class="oe_stat_button" name="open_payment_matching_screen"-->
+                                    <!--string="Payment Matching" type="object"-->
+                                    <!--groups="account.group_account_user"-->
+                                    <!--icon="fa-dollar"/>-->
+                        </div>
                         <div class="oe_title">
+
                             <h1>
                                 <field name="name" default_focus="1" placeholder="Name"/>
                             </h1>
@@ -40,42 +59,89 @@
                         <group>
                             <group>
                                 <field name="name"/>
-                                <field name="due_date" attrs="{'readonly' : [('state', 'not in',['draft_collect'])] }"/>
+                                <field name="date" attrs="{'readonly' : [('state', 'not in',['draft_collect'])] }"/>
                                 <field name="partner_id"
                                        attrs="{'readonly' : [('state', 'not in',['draft_collect'])] }"/>
-                                <field name="journal_id"/>
-
+                                <field name="partner_to_id"
+                                       attrs="{'readonly' : [('state', 'not in',['draft_collect'])] }"/>
+                                <field name="journal_id"  domain="[('bnk_receive','=',True)]"/>
                                 <field name="to_check"/>
                                 <field name="supplier_id" attrs="{'invisible': [('supplier_id', '=', False)]}"/>
                                 <field name="pay_ok" invisible="1"/>
                                 <field name="collect_ok" invisible="1"/>
+                                <field name="company_id"/>
+                                <!--<field name="ref" attrs="{'readonly' : [('state', 'not in',['draft_collect'])] }"/>-->
+                                <!--<field name="comm"/>-->
+                                <!--<field name="due_date"/>-->
+
                             </group>
+
                             <group>
                                 <field name="currency_id" groups="base.group_multi_currency"
                                        attrs="{'readonly':[('state','not in', ['draft_collect','draft_pay'])]}"
                                        options="{'create': false,'no_open': True,'no_quick_create':True,'no_create':True,'create_edit': false,'limit': 1}"/>
-                                <field name="company_id" groups="base.group_multi_company"
-                                       options="{'create': false,'no_open': True,'no_quick_create':True,'no_create':True,'create_edit': false,'limit': 1}"/>
+                                <!--<field name="company_id" groups="base.group_multi_company"-->
+                                <!--options="{'create': false,'no_open': True,'no_quick_create':True,'no_create':True,'create_edit': false,'limit': 1}"/>-->
                                 <field name="company_currency_id" invisible="1"/>
                                 <field name="not_company_currency" invisible="1"/>
                                 <field name="use_custom_rate" groups="base.group_multi_currency" invisible="1"/>
                                 <field name="currency_rate" groups="base.group_multi_currency" invisible="1"/>
-                                <field name="custom_rate" groups="base.group_multi_currency" string="Used Rate" force_save="1"
+                                <field name="custom_rate" groups="base.group_multi_currency" string="Used Rate"
+                                       force_save="1"
                                        attrs="{'invisible':['|',('not_company_currency','=',False), ('use_custom_rate','=',False)]}"/>
+                                <field name="account_note_paper_id"
+                                       attrs="{'readonly' : [('state', 'not in',['draft_collect'])] }"/>
+                                <field name="account_under_collection_id"
+                                       attrs="{'readonly' : [('state', 'not in',['receive'])] }"/>
+                                <field name="account_bank_collect_id"
+                                       attrs="{'readonly' : [('state', 'not in',['deposit'])] }"/>
+
+
                             </group>
                         </group>
                         <notebook>
                             <page string="Information">
-                                <group>
-                                    <group>
+                                <!--                          <field name="line_ids">
+                                                              <tree editable="bottom">
+                                                                  <field name="state" invisible="0"/>
+                                                                  <field name="ref" required="1" />
+                                                                  <field name="bank_id" />
+                                                                  <field name="date" required="1" />
+                                                                  <field name="chemical_bank_id" />
+                                                                  <field name="account_note_paper_id" />
+                                                                  <field name="account_under_collection_id" attrs="{'readonly' : [('state', 'not in',['receive'])] }"/>
+                                                                  <field name="account_bank_collect_id" attrs="{'readonly' : [('state', 'not in',['deposit'])] }"/>
+
+                                                                  <field name="amount" attrs="{'readonly' : [('state', 'not in',['draft_collect'])] }"/>
+                                                              </tree>
+                                                          </field>
+                          -->
+
+                                <field name="line_ids" context="{'default_type': 'collect', 'type': 'collect'}">
+                                    <tree editable="bottom">
+                                        <field name="state" invisible="1"/>
                                         <field name="ref"
                                                attrs="{'readonly' : [('state', 'not in',['draft_collect'])] }"/>
-                                        <field name="comm"/>
-                                        <field name="date"/>
+                                        <field name="bank_id"
+                                               attrs="{'readonly' : [('state', 'not in',['draft_collect'])] }"/>
+                                        <field name="date" required="1"
+                                               attrs="{'readonly' : [('state', 'not in',['draft_collect'])] }"/>
+                                        <field name="chemical_bank_id"
+                                               attrs="{'readonly' : [('state', 'not in',['draft_collect'])] }"/>
+                                        <field name="account_note_paper_id"
+                                               attrs="{'readonly' : [('state', 'not in',['draft_collect'])] }"/>
+                                        <field name="account_under_collection_id"
+                                               attrs="{'readonly' : [('state', 'not in',['receive'])] }"/>
+                                        <field name="account_bank_collect_id"
+                                               attrs="{'readonly' : [('state', 'not in',['deposit'])] }"/>
+
                                         <field name="amount"
                                                attrs="{'readonly' : [('state', 'not in',['draft_collect'])] }"/>
-                                    </group>
-                                </group>
+                                        <!--<field name="check_type" readonly="0"/>-->
+
+                                    </tree>
+                                </field>
+
                             </page>
                         </notebook>
                     </sheet>
@@ -96,10 +162,27 @@
                                 type="object" class="oe_highlight"/>
                         <button name="button_pay_bnk_return_check" states="generate_exp,generate_supp"
                                 string="Return Check From bank" type="object" class="oe_highlight"/>
+                        <button name="cancel"
+                                string="Cancel" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', 'in', ('cancel','confirm'))]}"/>
+
 
                         <field name="state" widget="statusbar"
                                statusbar_visible="draft_pay,generate_supp,bank_payment,cheque_return,confirm"/>
                     </header>
+                    <div class="oe_button_box">
+
+                        <button name="document_view"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-list-ol"
+                        >
+
+                            <field string="Journal Entries" name="doc_count" widget="statinfo"/>
+                        </button>
+
+
+                    </div>
                     <div class="oe_title">
                         <h1>
                             <field name="name" default_focus="1" placeholder="Name"/>
@@ -108,37 +191,68 @@
                     <group>
                         <group>
                             <field name="name"/>
-                            <field name="due_date" attrs="{'readonly' : [('state', 'not in',['draft_pay'])] }"/>
+                            <field name="date" attrs="{'readonly' : [('state', 'not in',['draft_pay'])] }"/>
                             <field name="partner_id" attrs="{'readonly' : [('state', 'not in',['draft_pay'])] }"/>
                             <field name="journal_id" domain="[('bnk_payable','=',True)]"/>
                             <field name="to_check"/>
                             <field name="pay_ok" invisible="1"/>
                             <field name="collect_ok" invisible="1"/>
+                            <!--<field name="chemical_bank_id"/>-->
+
+                            <field name="company_id"/>
                         </group>
                         <group>
                             <field name="currency_id" groups="base.group_multi_currency"
                                    attrs="{'readonly':[('state','not in', ['draft_collect','draft_pay'])]}"
                                    options="{'create': false,'no_open': True,'no_quick_create':True,'no_create':True,'create_edit': false,'limit': 1}"/>
-                            <field name="company_id" groups="base.group_multi_company"
-                                   options="{'create': false,'no_open': True,'no_quick_create':True,'no_create':True,'create_edit': false,'limit': 1}"/>
+                            <!--<field name="company_id" groups="base.group_multi_company"-->
+                            <!--options="{'create': false,'no_open': True,'no_quick_create':True,'no_create':True,'create_edit': false,'limit': 1}"/>-->
                             <field name="company_currency_id" invisible="1"/>
                             <field name="not_company_currency" invisible="1"/>
                             <field name="use_custom_rate" groups="base.group_multi_currency" invisible="1"/>
                             <field name="currency_rate" groups="base.group_multi_currency" invisible="1"/>
-                            <field name="custom_rate" groups="base.group_multi_currency" string="Used Rate" force_save="1"
+                            <field name="custom_rate" groups="base.group_multi_currency" string="Used Rate"
+                                   force_save="1"
                                    attrs="{'invisible':['|',('not_company_currency','=',False), ('use_custom_rate','=',False)]}"/>
+
+                            <field name="generate_check_to_supplier"
+                                   attrs="{'readonly' : [('state', 'not in',['draft_pay'])] }"/>
+                            <field name="bank_payment"
+                                   attrs="{'readonly' : [('state', 'not in',['generate_supp'])] }"/>
+
                         </group>
                     </group>
                     <notebook>
                         <page string="Information">
-                            <group>
-                                <group>
-                                    <field name="ref" attrs="{'readonly' : [('state', 'not in',['draft_pay'])] }"/>
-                                    <field name="comm"/>
-                                    <field name="date"/>
-                                    <field name="amount" attrs="{'readonly' : [('state', 'not in',['draft_pay'])] }"/>
-                                </group>
-                            </group>
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="state" invisible="1"/>
+                                    <field name="ref"
+                                           attrs="{'readonly' : [('state', 'not in',['draft_pay'])] }"/>
+                                    <field name="bank_id"
+                                           attrs="{'readonly' : [('state', 'not in',['draft_pay'])] }"/>
+                                    <field name="date" required="1"
+                                           attrs="{'readonly' : [('state', 'not in',['draft_pay'])] }"/>
+                                    <field name="chemical_bank_id"
+                                           attrs="{'readonly' : [('state', 'not in',['draft_pay'])] }"/>
+                                    <field name="generate_check_to_supplier"
+                                           attrs="{'readonly' : [('state', 'not in',['draft_pay'])] }"/>
+                                    <field name="bank_payment"
+                                           attrs="{'readonly' : [('state', 'not in',['generate_supp'])] }"/>
+
+                                    <field name="amount"
+                                           attrs="{'readonly' : [('state', 'not in',['draft_pay'])] }"/>
+                                    <!--<field name="check_type" readonly="1"/>-->
+                                </tree>
+                            </field>
+                            <!--<group>-->
+                            <!--<group>-->
+                            <!--<field name="ref" attrs="{'readonly' : [('state', 'not in',['draft_pay'])] }"/>-->
+                            <!--<field name="comm"/>-->
+                            <!--<field name="due_date"/>-->
+                            <!--<field name="amount" attrs="{'readonly' : [('state', 'not in',['draft_pay'])] }"/>-->
+                            <!--</group>-->
+                            <!--</group>-->
                         </page>
                     </notebook>
                 </form>
@@ -156,6 +270,7 @@
                     <field name="partner_id"/>
                     <field name="ref"/>
                     <field name="journal_id"/>
+                    <field name="company_id"/>
                 </tree>
             </field>
         </record>
@@ -170,6 +285,7 @@
                     <field name="partner_id"/>
                     <field name="ref"/>
                     <field name="journal_id"/>
+                    <field name="company_id"/>
                 </tree>
             </field>
         </record>
@@ -232,14 +348,10 @@
             <field name="act_window_id" ref="account_check_action_generic_pay"/>
         </record>
 
-        <menuitem id="menu_check_root_root"
-                  name="Checks Management"
-                  sequence="4"/>
-
         <menuitem id="menu_check_root"
                   name="Checks"
-                  parent="menu_check_root_root"
-                  sequence="4"/>
+                  parent="account.menu_finance_entries"
+                  sequence="20"/>
 
         <menuitem id="menu_check_collect"
                   name="Check Collection"
@@ -252,6 +364,41 @@
                   parent="menu_check_root"
                   action="account_check_action_generic_pay"
                   sequence="2"/>
+        <record id="account_check_tree_line" model="ir.ui.view">
+            <field name="name">check.tree</field>
+            <field name="model">check.lines</field>
+            <field name="arch" type="xml">
+                <tree create="0" edit="0" delete="0" string="Check line">
+                    <field name="check_id"/>
+
+                    <field name="ref"/>
+                    <field name="date"/>
+                    <field name="check_id"/>
+                    <field name="chemical_bank_id"/>
+                    <field name="amount"/>
+                    <field name="check_type"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="account_check_action_line1" model="ir.actions.act_window">
+            <field name="name">Check lines</field>
+            <field name="res_model">check.lines</field>
+            <field name="view_id" ref="account_check_tree_line"/>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create payment accounting check.
+                </p>
+            </field>
+        </record>
+
+
+        <menuitem id="menu_check_line"
+                  name="Check Lines2"
+                  parent="menu_check_root"
+                  action="account_check_action_line1"
+                  sequence="3"/>
 
         <record id="view_account_journal_check_state_form_inherited" model="ir.ui.view">
             <field name="name">account.journal.check.state.inherited</field>
@@ -260,6 +407,8 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='type']" position="after">
                     <field name="bnk_payable"/>
+                    <field name="bnk_receive"/>
+
                     <field name="journal_state"/>
                 </xpath>
             </field>
@@ -272,7 +421,11 @@
             <field name="arch" type="xml">
                 <data>
                     <xpath expr="//page/field[@name='line_ids']/tree//field[@name='name']" position="after">
+                        <field name="partner_to_id"/>
                         <field name="date_maturity"/>
+                        <field name="bank_id"/>
+                        <field name="chemical_bank_id"/>
+
                     </xpath>
                 </data>
             </field>
