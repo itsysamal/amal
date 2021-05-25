@@ -236,8 +236,9 @@ class AnalyticAccountReportFormXls(models.AbstractModel):
             worksheet.write(row + 1, col + 4, '%.2f' % rec.cost_revenue, header2_format)
             total_cost_revenue += rec.cost_revenue
             total_cost_purchased += rec.cost_purchased
-            col += 5
+            # col += 5
             if all_account_expense_collection:
+                col += 5
                 for exp in all_account_expense_collection:
                     worksheet.set_row(row + 1, 25)
                     worksheet.set_column(col, col, 30)
