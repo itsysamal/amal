@@ -1,0 +1,21 @@
+<odoo>
+    <data>
+        <report id="analytic_tree_xls_id"
+                model="account.analytic.account"
+                string="Analytic Account Tree Report XLSX"
+                report_type="xlsx"
+                name="analytic_account_reports.analytic_tree_xls_id"
+                file="analytic_account_reports.analytic_tree_xls_id"
+                attachment_use="False"/>
+        <report id="analytic_form_xls_id"
+                model="account.analytic.account"
+                string="Analytic Account Form Report XLSX"
+                report_type="xlsx"
+                name="analytic_account_reports.analytic_form_xls_id"
+                file="analytic_account_reports.analytic_form_xls_id"
+                attachment_use="False"
+                menu="False"
+        />
+
+    </data>
+</odoo>
