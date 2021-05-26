@@ -205,9 +205,16 @@ class AccountAnalyticAccount(models.Model):
                 account.total_balance = 0.00
 
     def analytic_print_xls(self):
-        report_obj = self.env['report.analytic_account_reports.analytic_form_xls_id'].with_context(
-            active_model='account.analytic.account')
-        return report_obj
+        self.ensure_one()
+        active_record = self.env.context.get('active_ids', [])
+        record = self.env['account.analytic.account'].browse(active_record)
+
+        data = {
+            'ids': self.ids,
+            'model': self._name,
+            'record': record.id,
+        }
+        return self.env.ref('analytic_account_reports.analytic_form_xls_id').report_action(self, data=data)
 
 
 class ProductTemplateAttributeLine(models.Model):
