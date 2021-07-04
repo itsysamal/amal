@@ -88,6 +88,7 @@ class AccountAnalyticAccount(models.Model):
                         all_po_currency.append(rec.currency_id)
                         if rec.currency_id == cur:
                             rec.amount = price_unit
+                            rec.write({'amount': price_unit})
                         all_po_cur_amount.append(rec.id)
                     if cur not in all_po_currency:
                         all_po_currency.append(cur)
