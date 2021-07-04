@@ -3,6 +3,22 @@
 
 from odoo import models, fields, api
 
+class AccountExpenseCollection(models.Model):
+    _name = 'account.expense.collection'
+
+    name = fields.Char("Name")
+    amount = fields.Float("Amount", digits=(12, 2))
+    account_id = fields.Many2one('account.account', string='Account')
+    analytic_account_id = fields.Many2one('account.analytic.account', string='Analytics Account')
+
+
+class PurchaseMultiCurrency(models.Model):
+    _name = 'purchase.multi.currency'
+
+    name = fields.Char("Name")
+    amount = fields.Float("Amount", digits=(12, 2))
+    currency_id = fields.Many2one('res.currency', string='Currency')
+    analytic_account_id = fields.Many2one('account.analytic.account', string='Analytics Account')
 
 class AccountAnalyticAccount(models.Model):
     _inherit = 'account.analytic.account'
@@ -86,9 +102,9 @@ class AccountAnalyticAccount(models.Model):
                 if account.po_multi_cur_ids:
                     for rec in account.po_multi_cur_ids:
                         all_po_currency.append(rec.currency_id)
-                        if rec.currency_id == cur:
+                        if rec.currency_id.id == cur.id:
                             rec.amount = price_unit
-                            rec.write({'amount': price_unit})
+                            rec.update({'amount': price_unit})
                         all_po_cur_amount.append(rec.id)
                     if cur not in all_po_currency:
                         all_po_currency.append(cur)
@@ -231,19 +247,3 @@ class AccountAccount(models.Model):
     is_expense = fields.Boolean("Print As Expense?")
 
 
-class AccountExpenseCollection(models.Model):
-    _name = 'account.expense.collection'
-
-    name = fields.Char("Name")
-    amount = fields.Float("Amount", digits=(12, 2))
-    account_id = fields.Many2one('account.account', string='Account')
-    analytic_account_id = fields.Many2one('account.analytic.account', string='Analytics Account')
-
-
-class PurchaseMultiCurrency(models.Model):
-    _name = 'purchase.multi.currency'
-
-    name = fields.Char("Name")
-    amount = fields.Float("Amount", digits=(12, 2))
-    currency_id = fields.Many2one('res.currency', string='Currency')
-    analytic_account_id = fields.Many2one('account.analytic.account', string='Analytics Account')
