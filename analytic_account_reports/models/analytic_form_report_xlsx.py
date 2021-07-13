@@ -74,7 +74,26 @@ class AnalyticAccountReportFormXls(models.AbstractModel):
             'fg_color': '#FF0000'})
         header4_format.set_text_wrap()
         header4_format.set_font_size(14)
-
+        header6_format = workbook.add_format({
+            'border': 1,
+            'border_color': 'black',
+            'align': 'center',
+            'font_color': 'white',
+            'bold': True,
+            'valign': 'vcenter',
+            'fg_color': '#92D050'})
+        header6_format.set_text_wrap()
+        header6_format.set_font_size(14)
+        header7_format = workbook.add_format({
+            'border': 1,
+            'border_color': 'black',
+            'align': 'center',
+            'font_color': 'white',
+            'bold': True,
+            'valign': 'vcenter',
+            'fg_color': 'red'})
+        header7_format.set_text_wrap()
+        header7_format.set_font_size(14)
         worksheet = workbook.add_worksheet('Analytic accounts Report')
         worksheet.set_column('H:H', 30)
         worksheet.set_row(0, 40)
@@ -254,12 +273,12 @@ class AnalyticAccountReportFormXls(models.AbstractModel):
                 worksheet.set_row(row + 3, 30)
                 worksheet.set_row(row + 4, 30)
                 worksheet.set_row(row + 5, 30)
-                worksheet.write(row, col + 1, '%.2f' % rec.total_cost_revenue, header2_format)
-                worksheet.write(row + 1, col + 1, '%.2f' % rec.total_cost_per_qty, header2_format)
-                worksheet.write(row + 2, col + 1, '%.2f' % rec.total_revenue_income_other, header2_format)
-                worksheet.write(row + 3, col + 1, '%.2f' % rec.total_profit, header2_format)
-                worksheet.write(row + 4, col + 1, '%.2f' % rec.total_qty_result, header2_format)
-                worksheet.write(row + 5, col + 1, '%.2f' % rec.total_balance, header2_format)
+                worksheet.write(row, col + 1, '%.2f' % rec.total_cost_revenue, header6_format)
+                worksheet.write(row + 1, col + 1, '%.2f' % rec.total_cost_per_qty, header7_format)
+                worksheet.write(row + 2, col + 1, '%.2f' % rec.total_revenue_income_other, header6_format)
+                worksheet.write(row + 3, col + 1, '%.2f' % rec.total_profit, header3_format)
+                worksheet.write(row + 4, col + 1, '%.2f' % rec.total_qty_result, header3_format)
+                worksheet.write(row + 5, col + 1, '%.2f' % rec.total_balance, header3_format)
                 total_total_cost_revenue += rec.total_cost_revenue
                 total_total_cost_per_qty += rec.total_cost_per_qty
                 total_total_revenue_income_other += rec.total_revenue_income_other
@@ -274,12 +293,12 @@ class AnalyticAccountReportFormXls(models.AbstractModel):
                 worksheet.set_row(row + 8, 30)
                 worksheet.set_row(row + 9, 30)
                 worksheet.set_row(row + 10, 30)
-                worksheet.write(row + 5, col + 1, '%.2f' % rec.total_cost_revenue, header2_format)
-                worksheet.write(row + 6, col + 1, '%.2f' % rec.total_cost_per_qty, header2_format)
-                worksheet.write(row + 7, col + 1, '%.2f' % rec.total_revenue_income_other, header2_format)
-                worksheet.write(row + 8, col + 1, '%.2f' % rec.total_profit, header2_format)
-                worksheet.write(row + 9, col + 1, '%.2f' % rec.total_qty_result, header2_format)
-                worksheet.write(row + 10, col + 1, '%.2f' % rec.total_balance, header2_format)
+                worksheet.write(row + 5, col + 1, '%.2f' % rec.total_cost_revenue, header6_format)
+                worksheet.write(row + 6, col + 1, '%.2f' % rec.total_cost_per_qty, header7_format)
+                worksheet.write(row + 7, col + 1, '%.2f' % rec.total_revenue_income_other, header6_format)
+                worksheet.write(row + 8, col + 1, '%.2f' % rec.total_profit, header3_format)
+                worksheet.write(row + 9, col + 1, '%.2f' % rec.total_qty_result, header3_format)
+                worksheet.write(row + 10, col + 1, '%.2f' % rec.total_balance, header3_format)
                 total_total_cost_revenue += rec.total_cost_revenue
                 total_total_cost_per_qty += rec.total_cost_per_qty
                 total_total_revenue_income_other += rec.total_revenue_income_other
@@ -288,51 +307,51 @@ class AnalyticAccountReportFormXls(models.AbstractModel):
                 total_total_balance += rec.total_balance
             col += 1
         row = 0
-        worksheet.write(row, col + 1, '%.2f' % total_qty_purchased, header1_format)
-        worksheet.write(row + 1, col + 1, '%.2f' % total_qty_sold, header1_format)
-        worksheet.write(row + 2, col + 1, '%.2f' % total_balance_so_po, header1_format)
-        worksheet.write(row + 3, col + 1, '', header2_format)
-        # worksheet.write(row + 3, col + 1, 'Total', header2_format)
-        worksheet.write(row + 4, col + 1, ' ', header2_format)
-        worksheet.write(row + 5, col + 1, ' ', header2_format)
-        worksheet.write(row + 6, col + 1, ' ', header2_format)
-        row = 7
-        if all_attributes_header:
-            for attr in all_attributes_header:
-                worksheet.write(row, col + 1, ' ', header2_format)
-                row += 1
-            worksheet.write(row, col + 1, '%.2f' % total_qty_purchased, header1_format)
-        else:
-            worksheet.write(row, col + 1, '%.2f' % total_qty_purchased, header1_format)
-        worksheet.write(row + 1, col + 1, ' ', header1_format)
-        worksheet.write(row + 2, col + 1, ' ', header1_format)
-        worksheet.write(row + 3, col + 1, '%.2f' % total_cost_purchased, header1_format)
-        worksheet.write(row + 4, col + 1, '%.2f' % total_cost_revenue, header1_format)
-        if all_account_expense_collection:
-            row += 5
-            for exp in all_account_expense_collection:
-                values_exp = []
-                for line in all_account_expense_line:
-                    if line.account_id == exp and line.account_id.is_expense:
-                        values_exp.append(line.amount)
-                if values_exp:
-                    worksheet.write(row, col + 1, sum(values_exp), header1_format)
-                else:
-                    worksheet.write(row, col + 1, ' ', header1_format)
-                row += 1
-            worksheet.write(row, col + 1, total_total_cost_revenue, header1_format)
-            worksheet.write(row + 1, col + 1, total_total_cost_per_qty, header1_format)
-            worksheet.write(row + 2, col + 1, total_total_revenue_income_other, header1_format)
-            worksheet.write(row + 3, col + 1, total_total_profit, header1_format)
-            worksheet.write(row + 4, col + 1, total_total_qty_result, header1_format)
-            worksheet.write(row + 5, col + 1, total_total_balance, header1_format)
-        else:
-            worksheet.write(row + 5, col + 1, '%.2f' % total_total_cost_revenue, header1_format)
-            worksheet.write(row + 6, col + 1, '%.2f' % total_total_cost_per_qty, header1_format)
-            worksheet.write(row + 7, col + 1, '%.2f' % total_total_revenue_income_other, header1_format)
-            worksheet.write(row + 8, col + 1, '%.2f' % total_total_profit, header1_format)
-            worksheet.write(row + 9, col + 1, '%.2f' % total_total_qty_result, header1_format)
-            worksheet.write(row + 10, col + 1, '%.2f' % total_total_balance, header1_format)
+        # worksheet.write(row, col + 1, '%.2f' % total_qty_purchased, header1_format)
+        # worksheet.write(row + 1, col + 1, '%.2f' % total_qty_sold, header1_format)
+        # worksheet.write(row + 2, col + 1, '%.2f' % total_balance_so_po, header1_format)
+        # worksheet.write(row + 3, col + 1, '', header2_format)
+        # # worksheet.write(row + 3, col + 1, 'Total', header2_format)
+        # worksheet.write(row + 4, col + 1, ' ', header2_format)
+        # worksheet.write(row + 5, col + 1, ' ', header2_format)
+        # worksheet.write(row + 6, col + 1, ' ', header2_format)
+        # row = 7
+        # if all_attributes_header:
+        #     for attr in all_attributes_header:
+        #         worksheet.write(row, col + 1, ' ', header2_format)
+        #         row += 1
+        #     worksheet.write(row, col + 1, '%.2f' % total_qty_purchased, header1_format)
+        # else:
+        #     worksheet.write(row, col + 1, '%.2f' % total_qty_purchased, header1_format)
+        # worksheet.write(row + 1, col + 1, ' ', header1_format)
+        # worksheet.write(row + 2, col + 1, ' ', header1_format)
+        # worksheet.write(row + 3, col + 1, '%.2f' % total_cost_purchased, header1_format)
+        # worksheet.write(row + 4, col + 1, '%.2f' % total_cost_revenue, header1_format)
+        # if all_account_expense_collection:
+        #     row += 5
+        #     for exp in all_account_expense_collection:
+        #         values_exp = []
+        #         for line in all_account_expense_line:
+        #             if line.account_id == exp and line.account_id.is_expense:
+        #                 values_exp.append(line.amount)
+        #         if values_exp:
+        #             worksheet.write(row, col + 1, sum(values_exp), header1_format)
+        #         else:
+        #             worksheet.write(row, col + 1, ' ', header1_format)
+        #         row += 1
+        #     worksheet.write(row, col + 1, total_total_cost_revenue, header1_format)
+        #     worksheet.write(row + 1, col + 1, total_total_cost_per_qty, header1_format)
+        #     worksheet.write(row + 2, col + 1, total_total_revenue_income_other, header1_format)
+        #     worksheet.write(row + 3, col + 1, total_total_profit, header1_format)
+        #     worksheet.write(row + 4, col + 1, total_total_qty_result, header1_format)
+        #     worksheet.write(row + 5, col + 1, total_total_balance, header1_format)
+        # else:
+        #     worksheet.write(row + 5, col + 1, '%.2f' % total_total_cost_revenue, header1_format)
+        #     worksheet.write(row + 6, col + 1, '%.2f' % total_total_cost_per_qty, header1_format)
+        #     worksheet.write(row + 7, col + 1, '%.2f' % total_total_revenue_income_other, header1_format)
+        #     worksheet.write(row + 8, col + 1, '%.2f' % total_total_profit, header1_format)
+        #     worksheet.write(row + 9, col + 1, '%.2f' % total_total_qty_result, header1_format)
+        #     worksheet.write(row + 10, col + 1, '%.2f' % total_total_balance, header1_format)
         row = 4
         worksheet.set_row(row + 4, 30)
         worksheet.set_row(row + 8, 30)

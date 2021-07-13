@@ -2,7 +2,7 @@
     <data>
         <report id="analytic_tree_xls_id"
                 model="account.analytic.account"
-                string="Analytic Account Tree Report XLSX"
+                string="Analytic Account Report XLSX"
                 report_type="xlsx"
                 name="analytic_account_reports.analytic_tree_xls_id"
                 file="analytic_account_reports.analytic_tree_xls_id"
