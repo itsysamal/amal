@@ -301,13 +301,13 @@ class AnalyticAccountReportFormXls(models.AbstractModel):
             for attr in all_attributes_header:
                 worksheet.write(row, col + 1, ' ', header2_format)
                 row += 1
-            worksheet.write(row, col + 1, '%.2f' % total_qty_purchased, header2_format)
+            worksheet.write(row, col + 1, '%.2f' % total_qty_purchased, header1_format)
         else:
-            worksheet.write(row, col + 1, '%.2f' % total_qty_purchased, header2_format)
-        worksheet.write(row + 1, col + 1, ' ', header2_format)
-        worksheet.write(row + 2, col + 1, ' ', header2_format)
-        worksheet.write(row + 3, col + 1, '%.2f' % total_cost_purchased, header2_format)
-        worksheet.write(row + 4, col + 1, '%.2f' % total_cost_revenue, header2_format)
+            worksheet.write(row, col + 1, '%.2f' % total_qty_purchased, header1_format)
+        worksheet.write(row + 1, col + 1, ' ', header1_format)
+        worksheet.write(row + 2, col + 1, ' ', header1_format)
+        worksheet.write(row + 3, col + 1, '%.2f' % total_cost_purchased, header1_format)
+        worksheet.write(row + 4, col + 1, '%.2f' % total_cost_revenue, header1_format)
         if all_account_expense_collection:
             row += 5
             for exp in all_account_expense_collection:
@@ -316,9 +316,9 @@ class AnalyticAccountReportFormXls(models.AbstractModel):
                     if line.account_id == exp and line.account_id.is_expense:
                         values_exp.append(line.amount)
                 if values_exp:
-                    worksheet.write(row, col + 1, sum(values_exp), header2_format)
+                    worksheet.write(row, col + 1, sum(values_exp), header1_format)
                 else:
-                    worksheet.write(row, col + 1, ' ', header2_format)
+                    worksheet.write(row, col + 1, ' ', header1_format)
                 row += 1
             worksheet.write(row, col + 1, total_total_cost_revenue, header1_format)
             worksheet.write(row + 1, col + 1, total_total_cost_per_qty, header1_format)
